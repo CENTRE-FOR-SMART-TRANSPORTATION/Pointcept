@@ -4,10 +4,10 @@
 # change versions as needed
 
 conda create -n pointcept python=3.8 -y
-conda activate pointcept
+source activate pointcept
 conda install ninja -y
 # Choose version you want here: https://pytorch.org/get-started/previous-versions/
-conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia
+conda install pytorch torchvision torchaudio pytorch-cuda=12.1 -c pytorch -c nvidia -y
 conda install h5py pyyaml -c anaconda -y
 conda install sharedarray tensorboard tensorboardx yapf addict einops scipy plyfile termcolor timm -c conda-forge -y
 conda install pytorch-cluster pytorch-scatter pytorch-sparse -c pyg -y
