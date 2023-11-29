@@ -1,6 +1,6 @@
 _base_ = ["../_base_/default_runtime.py"]
 # misc custom setting
-batch_size = 12  # bs: total bs in all gpus
+batch_size = 1  # bs: total bs in all gpus
 mix_prob = 0.8
 empty_cache = False
 enable_amp = True
@@ -37,7 +37,7 @@ model = dict(
 )
 
 # scheduler settings
-epoch = 3000
+epoch = 100
 optimizer = dict(type="AdamW", lr=0.006, weight_decay=0.05)
 scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
 
@@ -65,7 +65,7 @@ data = dict(
     ],
     train=dict(
         type=dataset_type,
-        split=("Area_1", "Area_2", "Area_3", "Area_4", "Area_6"),
+        split=("Area_1"),
         data_root=data_root,
         transform=[
             dict(type="CenterShift", apply_z=True),

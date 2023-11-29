@@ -197,6 +197,7 @@ class Trainer(TrainerBase):
 
     def build_model(self):
         model = build_model(self.cfg.model)
+        #print("Model that was built:", model)
         if self.cfg.sync_bn:
             model = nn.SyncBatchNorm.convert_sync_batchnorm(model)
         n_parameters = sum(p.numel() for p in model.parameters() if p.requires_grad)
@@ -215,8 +216,9 @@ class Trainer(TrainerBase):
         return writer
 
     def build_train_loader(self):
+        print("Building the train dataset:", self.cfg.data.train)
         train_data = build_dataset(self.cfg.data.train)
-
+        
         if comm.get_world_size() > 1:
             train_sampler = torch.utils.data.distributed.DistributedSampler(train_data)
         else:

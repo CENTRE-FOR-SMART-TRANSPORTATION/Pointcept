@@ -211,6 +211,7 @@ class Registry:
                 return parent.get(key)
 
     def build(self, *args, **kwargs):
+        print(self.build_func)
         return self.build_func(*args, **kwargs, registry=self)
 
     def _add_children(self, registry):

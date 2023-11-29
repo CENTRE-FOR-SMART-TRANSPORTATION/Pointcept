@@ -15,8 +15,11 @@ from pointcept.engines.launch import launch
 import json
 
 def main_worker(cfg):
-    cfg = default_setup(cfg)
+    print()
+    print("In main_func now...")
+    cfg = default_setup(cfg) # I think it is adding batch size and stuff
     trainer = Trainer(cfg)
+    return
     trainer.train()
 
 

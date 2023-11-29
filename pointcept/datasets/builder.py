@@ -13,4 +13,6 @@ DATASETS = Registry("datasets")
 
 def build_dataset(cfg):
     """Build datasets."""
+    print("Building...", cfg)
+    print(DATASETS)
     return DATASETS.build(cfg)

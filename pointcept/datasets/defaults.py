@@ -29,6 +29,7 @@ class DefaultDataset(Dataset):
         test_cfg=None,
         loop=1,
     ):
+        print("init function for defaultdataset called")
         super(DefaultDataset, self).__init__()
         self.data_root = data_root
         self.split = split

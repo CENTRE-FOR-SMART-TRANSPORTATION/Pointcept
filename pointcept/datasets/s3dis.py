@@ -31,6 +31,7 @@ class S3DISDataset(Dataset):
         cache=False,
         loop=1,
     ):
+        print("init function for s3disdataset called...")
         super(S3DISDataset, self).__init__()
         self.data_root = data_root
         self.split = split
