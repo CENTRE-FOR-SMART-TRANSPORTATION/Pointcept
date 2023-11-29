@@ -22,16 +22,18 @@ def main_worker(cfg):
 
 def main():
     args = default_argument_parser().parse_args()
+    print(args)
     cfg = default_config_parser(args.config_file, args.options)
-
-    launch(
-        main_worker,
-        num_gpus_per_machine=args.num_gpus,
-        num_machines=args.num_machines,
-        machine_rank=args.machine_rank,
-        dist_url=args.dist_url,
-        cfg=(cfg,),
-    )
+    print(cfg)
+    print("done")
+    # launch(
+    #     main_worker,
+    #     num_gpus_per_machine=args.num_gpus,
+    #     num_machines=args.num_machines,
+    #     machine_rank=args.machine_rank,
+    #     dist_url=args.dist_url,
+    #     cfg=(cfg,),
+    # )
 
 
 if __name__ == "__main__":
