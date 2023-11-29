@@ -12,7 +12,7 @@ from pointcept.engines.defaults import (
 )
 from pointcept.engines.train import Trainer
 from pointcept.engines.launch import launch
-
+import json
 
 def main_worker(cfg):
     cfg = default_setup(cfg)
@@ -24,7 +24,7 @@ def main():
     args = default_argument_parser().parse_args()
     print(args)
     cfg = default_config_parser(args.config_file, args.options)
-    print(cfg)
+    print(json.dumps(cfg))
     print("done")
     # launch(
     #     main_worker,
