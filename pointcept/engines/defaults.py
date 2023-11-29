@@ -108,18 +108,24 @@ def default_argument_parser(epilog=None):
 
 def default_config_parser(file_path, options):
     # config name protocol: dataset_name/model_name-exp_name
+    print()
+    print(f"Parsing config: {file_path}...")
+    print(f"Options: {options}")
     if os.path.isfile(file_path):
+        print("Parsing from file...")
         cfg = Config.fromfile(file_path)
     else:
         sep = file_path.find("-")
         cfg = Config.fromfile(os.path.join(file_path[:sep], file_path[sep + 1 :]))
 
     if options is not None:
+        print("Merging from dict...")
         cfg.merge_from_dict(options)
 
     if cfg.seed is None:
+        print("Setting random seed")
         cfg.seed = get_random_seed()
-
+    
     cfg.data.train.loop = cfg.epoch // cfg.eval_epoch
 
     os.makedirs(os.path.join(cfg.save_path, "model"), exist_ok=True)

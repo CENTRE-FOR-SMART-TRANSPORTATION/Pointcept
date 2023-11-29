@@ -23,17 +23,18 @@ def main_worker(cfg):
 def main():
     args = default_argument_parser().parse_args()
     print(args)
+    print(f"The chosen config file that will be passed to config parser is: {args.config_file}")
     cfg = default_config_parser(args.config_file, args.options)
-    print(json.dumps(cfg))
-    print("done")
-    # launch(
-    #     main_worker,
-    #     num_gpus_per_machine=args.num_gpus,
-    #     num_machines=args.num_machines,
-    #     machine_rank=args.machine_rank,
-    #     dist_url=args.dist_url,
-    #     cfg=(cfg,),
-    # )
+    print(f"Config converted from file, the model backbone type is", cfg.model.backbone.type)
+    print("Launching worker...")
+    launch(
+        main_worker,
+        num_gpus_per_machine=args.num_gpus,
+        num_machines=args.num_machines,
+        machine_rank=args.machine_rank,
+        dist_url=args.dist_url,
+        cfg=(cfg,),
+    )
 
 
 if __name__ == "__main__":

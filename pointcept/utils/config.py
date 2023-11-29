@@ -177,6 +177,8 @@ class Config:
 
     @staticmethod
     def _file2dict(filename, use_predefined_variables=True):
+        print()
+        print("method: Config._file2dict")
         filename = osp.abspath(osp.expanduser(filename))
         check_file_exist(filename)
         fileExtname = osp.splitext(filename)[1]
@@ -232,11 +234,15 @@ class Config:
                     f'{deprecation_info["reference"]}'
                 )
             warnings.warn(warning_msg)
-
+        
+        
+        # print(f"cfg_dict in file2dict: {cfg_dict}") # this is everything in the file converted to key values in a dictionary
         cfg_text = filename + "\n"
         with open(filename, "r", encoding="utf-8") as f:
             # Setting encoding explicitly to resolve coding issue on windows
             cfg_text += f.read()
+        
+        # print(cfg_text) # this is the file in plain text
 
         if BASE_KEY in cfg_dict:
             cfg_dir = osp.dirname(filename)
@@ -273,6 +279,8 @@ class Config:
             # merge cfg_text
             cfg_text_list.append(cfg_text)
             cfg_text = "\n".join(cfg_text_list)
+        
+        # print("cfg_dict after merging base_key file", cfg_dict) # merges the keys in the base config into our current config
 
         return cfg_dict, cfg_text
 
@@ -332,8 +340,12 @@ class Config:
 
     @staticmethod
     def fromfile(filename, use_predefined_variables=True, import_custom_modules=True):
+        print()
+        print("method: Config.fromfile")
+        print(f"Parsing config from file: {filename}")
         cfg_dict, cfg_text = Config._file2dict(filename, use_predefined_variables)
         if import_custom_modules and cfg_dict.get("custom_imports", None):
+            print("Importing custom modules...", **cfg_dict["custom_imports"])
             import_modules_from_strings(**cfg_dict["custom_imports"])
         return Config(cfg_dict, cfg_text=cfg_text, filename=filename)
 

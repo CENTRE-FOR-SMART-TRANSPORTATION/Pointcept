@@ -58,6 +58,8 @@ def launch(
         args (tuple): arguments passed to main_func
     """
     world_size = num_machines * num_gpus_per_machine
+    print(f"World_size in launch function: {world_size}")
+    return
     if world_size > 1:
         if dist_url == "auto":
             assert (
