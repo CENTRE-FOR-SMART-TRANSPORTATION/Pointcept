@@ -1,0 +1,7 @@
+1. write the pointclouds in the s3dis format
+so a .txt file with x, y, z intensity
+and a folder corresponding to that file, with txt files for each label containing the x,y,z,intensity of the points that have that label
+
+once that is done, use the preproces s3dis script to write the files to the .pth preprocessed folder
+
+then see how to train the model based on that
