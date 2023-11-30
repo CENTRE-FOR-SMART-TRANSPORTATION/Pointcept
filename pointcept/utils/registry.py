@@ -33,7 +33,10 @@ def build_from_cfg(cfg, registry, default_args=None):
         raise TypeError(
             "default_args must be a dict or None, " f"but got {type(default_args)}"
         )
-
+    if cfg.type == "S3DISDataset":
+        print("Building from config...")
+        print(cfg)
+        print("default args", default_args)
     args = cfg.copy()
 
     if default_args is not None:
@@ -43,6 +46,8 @@ def build_from_cfg(cfg, registry, default_args=None):
     obj_type = args.pop("type")
     if isinstance(obj_type, str):
         obj_cls = registry.get(obj_type)
+        if cfg.type == "S3DISDataset":
+            print("obj_cls", obj_cls)
         if obj_cls is None:
             raise KeyError(f"{obj_type} is not in the {registry.name} registry")
     elif inspect.isclass(obj_type):
@@ -50,6 +55,8 @@ def build_from_cfg(cfg, registry, default_args=None):
     else:
         raise TypeError(f"type must be a str or valid type, but got {type(obj_type)}")
     try:
+        if cfg.type == "S3DISDataset":
+            print("Calling the init function for the S3DIS Dataset...")
         return obj_cls(**args)
     except Exception as e:
         # Normal TypeError does not print class name.
@@ -211,7 +218,6 @@ class Registry:
                 return parent.get(key)
 
     def build(self, *args, **kwargs):
-        print(self.build_func)
         return self.build_func(*args, **kwargs, registry=self)
 
     def _add_children(self, registry):

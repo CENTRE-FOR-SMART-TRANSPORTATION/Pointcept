@@ -74,6 +74,7 @@ class TrainerBase:
                 # => after epoch
                 self.after_epoch()
             # => after train
+            print(self.after_t)
             self.after_train()
 
     def before_train(self):
@@ -145,11 +146,14 @@ class Trainer(TrainerBase):
             self.before_train()
             self.logger.info(">>>>>>>>>>>>>>>> Start Training >>>>>>>>>>>>>>>>")
             for self.epoch in range(self.start_epoch, self.max_epoch):
+                print("running epoch", self.epoch)
                 # => before epoch
                 # TODO: optimize to iteration based
                 if comm.get_world_size() > 1:
                     self.train_loader.sampler.set_epoch(self.epoch)
+                print("going to model.train()")
                 self.model.train()
+                continue
                 self.data_iterator = enumerate(self.train_loader)
                 self.before_epoch()
                 # => run_epoch
@@ -166,6 +170,8 @@ class Trainer(TrainerBase):
                 # => after epoch
                 self.after_epoch()
             # => after train
+            print(self.after_train)
+            return
             self.after_train()
 
     def run_step(self):

@@ -17,7 +17,8 @@ from pointcept.utils.logger import get_root_logger
 from pointcept.utils.cache import shared_dict
 from .builder import DATASETS
 from .transform import Compose, TRANSFORMS
-
+import traceback
+import sys
 
 @DATASETS.register_module()
 class S3DISDataset(Dataset):
@@ -32,6 +33,7 @@ class S3DISDataset(Dataset):
         loop=1,
     ):
         print("init function for s3disdataset called...")
+        #traceback.print_stack(file=sys.stdout)
         super(S3DISDataset, self).__init__()
         self.data_root = data_root
         self.split = split
@@ -42,7 +44,14 @@ class S3DISDataset(Dataset):
         )  # force make loop = 1 while in test mode
         self.test_mode = test_mode
         self.test_cfg = test_cfg if test_mode else None
-
+        print("Printing attributes...")
+        print(self.data_root)
+        print(self.split)
+        print(self.transform, self.transform.transforms)
+        print(self.cache)
+        print(self.loop)
+        print(self.test_mode)
+        print(self.test_cfg)
         if test_mode:
             self.test_voxelize = TRANSFORMS.build(self.test_cfg.voxelize)
             self.test_crop = (
