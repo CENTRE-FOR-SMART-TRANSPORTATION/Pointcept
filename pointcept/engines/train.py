@@ -151,10 +151,15 @@ class Trainer(TrainerBase):
                 # TODO: optimize to iteration based
                 if comm.get_world_size() > 1:
                     self.train_loader.sampler.set_epoch(self.epoch)
-                print("going to model.train()")
+                # set the model to training mode
                 self.model.train()
-                continue
                 self.data_iterator = enumerate(self.train_loader)
+                print(self.train_loader)
+                for (i, j) in self.data_iterator:
+                    print(i,j)
+                    for k in j:
+                        print(k)
+                continue
                 self.before_epoch()
                 # => run_epoch
                 for (
