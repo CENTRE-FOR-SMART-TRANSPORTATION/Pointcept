@@ -19,6 +19,7 @@ from .builder import DATASETS
 from .transform import Compose, TRANSFORMS
 import traceback
 import sys
+import argparse
 
 @DATASETS.register_module()
 class CSTDataset(Dataset):
@@ -32,7 +33,7 @@ class CSTDataset(Dataset):
         cache=False,
         loop=1,
     ):
-        print("init function for s3disdataset called...")
+        print("init function for CSTDataset called...")
         #traceback.print_stack(file=sys.stdout)
         super(CSTDataset, self).__init__()
         self.data_root = data_root
@@ -160,3 +161,11 @@ class CSTDataset(Dataset):
 
     def __len__(self):
         return len(self.data_list) * self.loop
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--dataset_root", required=True, help="Path to Stanford3dDataset_v1.2 dataset"
+    )
+    args = parser.parse_args()
+    data = CSTDataset("train", args.dataset_root)
