@@ -13,20 +13,6 @@ import torch
 import numpy as np
 import multiprocessing as mp
 
-try:
-    import open3d
-except ImportError:
-    import warnings
-
-    warnings.warn("Please install open3d for parsing normal")
-
-try:
-    import trimesh
-except ImportError:
-    import warnings
-
-    warnings.warn("Please install trimesh for parsing normal")
-
 from concurrent.futures import ProcessPoolExecutor
 from itertools import repeat
 
@@ -34,14 +20,15 @@ area_mesh_dict = {}
 
 
 def parse_room(
-    room, angle, dataset_root, output_root, align_angle=True, parse_normal=False
+    room, dataset_root, output_root
 ):
     print("Parsing: {}".format(room))
     classes = [
-        "Traffic sign",
-        "Delineator post",
-        "Wires",
-        "Wooden utility pole",
+        "traffic-sign",
+        "delineator-post",
+        "wires",
+        "wooden-utility-pole",
+        "clutter"
     ]
     class2label = {cls: i for i, cls in enumerate(classes)}
     source_dir = os.path.join(dataset_root, room)
@@ -49,9 +36,10 @@ def parse_room(
     os.makedirs(os.path.dirname(save_path), exist_ok=True)
     object_path_list = sorted(glob.glob(os.path.join(source_dir, "Annotations/*.txt")))
 
+    print(class2label, source_dir ,save_path)
+
     room_coords = []
     room_intensity = []
-    room_normals = []
     room_semantic_gt = []
     room_instance_gt = []
 
@@ -60,67 +48,35 @@ def parse_room(
         obj = np.loadtxt(object_path)
         coords = obj[:, :3]
         intensity = obj[:, 3]
-
+        intensity = intensity.reshape([-1, 1])
         class_name = object_name if object_name in classes else "clutter"
         semantic_gt = np.repeat(class2label[class_name], coords.shape[0])
         semantic_gt = semantic_gt.reshape([-1, 1])
         instance_gt = np.repeat(object_id, coords.shape[0])
         instance_gt = instance_gt.reshape([-1, 1])
 
+        print(object_name, len(coords), len(intensity), class_name, semantic_gt[0])
+        print(coords.shape)
+        print(intensity.shape)
+        print(semantic_gt.shape)
         room_coords.append(coords)
         room_intensity.append(intensity)
         room_semantic_gt.append(semantic_gt)
         room_instance_gt.append(instance_gt)
 
+
     room_coords = np.ascontiguousarray(np.vstack(room_coords))
-
-    if parse_normal:
-        x_min, z_max, y_min = np.min(room_coords, axis=0)
-        x_max, z_min, y_max = np.max(room_coords, axis=0)
-        z_max = -z_max
-        z_min = -z_min
-        max_bound = np.array([x_max, y_max, z_max]) + 0.1
-        min_bound = np.array([x_min, y_min, z_min]) - 0.1
-        bbox = open3d.geometry.AxisAlignedBoundingBox(
-            min_bound=min_bound, max_bound=max_bound
-        )
-        # crop room
-        room_mesh = (
-            area_mesh_dict[os.path.dirname(room)]
-            .crop(bbox)
-            .transform(
-                np.array([[1, 0, 0, 0], [0, 0, -1, 0], [0, 1, 0, 0], [0, 0, 0, 1]])
-            )
-        )
-        vertices = np.array(room_mesh.vertices)
-        faces = np.array(room_mesh.triangles)
-        vertex_normals = np.array(room_mesh.vertex_normals)
-        room_mesh = trimesh.Trimesh(
-            vertices=vertices, faces=faces, vertex_normals=vertex_normals
-        )
-        (closest_points, distances, face_id) = room_mesh.nearest.on_surface(room_coords)
-        room_normals = room_mesh.face_normals[face_id]
-
-    if align_angle:
-        angle = (2 - angle / 180) * np.pi
-        rot_cos, rot_sin = np.cos(angle), np.sin(angle)
-        rot_t = np.array([[rot_cos, -rot_sin, 0], [rot_sin, rot_cos, 0], [0, 0, 1]])
-        room_center = (np.max(room_coords, axis=0) + np.min(room_coords, axis=0)) / 2
-        room_coords = (room_coords - room_center) @ np.transpose(rot_t) + room_center
-        if parse_normal:
-            room_normals = room_normals @ np.transpose(rot_t)
-
     room_intensity = np.ascontiguousarray(np.vstack(room_intensity))
     room_semantic_gt = np.ascontiguousarray(np.vstack(room_semantic_gt))
     room_instance_gt = np.ascontiguousarray(np.vstack(room_instance_gt))
+
     save_dict = dict(
         coord=room_coords,
-        color=room_colors,
+        intensity=room_intensity,
         semantic_gt=room_semantic_gt,
         instance_gt=room_instance_gt,
     )
-    if parse_normal:
-        save_dict["normal"] = room_normals
+
     torch.save(save_dict, save_path)
 
 
@@ -151,23 +107,12 @@ def main_process():
         assert args.raw_root is not None
 
     room_list = []
-    angle_list = []
 
     # Load room information
     print("Loading room information ...")
-    for i in range(1, 7):
-        area_info = np.loadtxt(
-            os.path.join(
-                args.dataset_root,
-                "Area_{}".format(i),
-                "Area_{}_alignmentAngle.txt".format(i),
-            ),
-            dtype=str,
-        )
-        room_list += [
-            os.path.join("Area_{}".format(i), room_info[0]) for room_info in area_info
-        ]
-        angle_list += [int(room_info[1]) for room_info in area_info]
+    for d in os.listdir(args.dataset_root):
+        room_list.append(d)
+
 
     # Preprocess data.
     print("Processing scenes...")
@@ -177,11 +122,8 @@ def main_process():
         pool.map(
             parse_room,
             room_list,
-            angle_list,
             repeat(args.dataset_root),
             repeat(args.output_root),
-            repeat(args.align_angle),
-            repeat(args.parse_normal),
         )
     )
 

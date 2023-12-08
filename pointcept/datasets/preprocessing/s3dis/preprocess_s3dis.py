@@ -64,6 +64,7 @@ def parse_room(
     room_semantic_gt = []
     room_instance_gt = []
 
+    total = 0
     for object_id, object_path in enumerate(object_path_list):
         object_name = os.path.basename(object_path).split("_")[0]
         obj = np.loadtxt(object_path)
@@ -75,11 +76,16 @@ def parse_room(
         semantic_gt = semantic_gt.reshape([-1, 1])
         instance_gt = np.repeat(object_id, coords.shape[0])
         instance_gt = instance_gt.reshape([-1, 1])
-
+        print(object_name, len(coords), class_name, semantic_gt[0])
+        print(coords.shape)
+        total += len(coords)
         room_coords.append(coords)
         room_colors.append(colors)
         room_semantic_gt.append(semantic_gt)
         room_instance_gt.append(instance_gt)
+
+    print(total)
+    
 
     room_coords = np.ascontiguousarray(np.vstack(room_coords))
 
@@ -164,7 +170,7 @@ def main_process():
 
     # Load room information
     print("Loading room information ...")
-    for i in range(1, 7):
+    for i in range(1, 2):
         area_info = np.loadtxt(
             os.path.join(
                 args.dataset_root,
@@ -220,8 +226,8 @@ def main_process():
     _ = list(
         pool.map(
             parse_room,
-            room_list,
-            angle_list,
+            room_list[:1],
+            angle_list[:1],
             repeat(args.dataset_root),
             repeat(args.output_root),
             repeat(args.align_angle),
