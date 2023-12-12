@@ -46,13 +46,6 @@ class CSTDataset(Dataset):
         self.test_mode = test_mode
         self.test_cfg = test_cfg if test_mode else None
         print("Printing attributes...")
-        print(self.data_root)
-        print(self.split)
-        print(self.transform, self.transform.transforms)
-        print(self.cache)
-        print(self.loop)
-        print(self.test_mode)
-        print(self.test_cfg)
         if test_mode:
             self.test_voxelize = TRANSFORMS.build(self.test_cfg.voxelize)
             self.test_crop = (
@@ -62,6 +55,7 @@ class CSTDataset(Dataset):
             self.aug_transform = [Compose(aug) for aug in self.test_cfg.aug_transform]
 
         self.data_list = self.get_data_list()
+        print(self.data_list)
         logger = get_root_logger()
         logger.info(
             "Totally {} x {} samples in {} set.".format(
@@ -91,12 +85,10 @@ class CSTDataset(Dataset):
             cache_name = "pointcept" + data_name.replace(os.path.sep, "-")
             data = shared_dict(cache_name)
         name = (
-            os.path.basename(self.data_list[idx % len(self.data_list)])
-            .split("_")[0]
-            .replace("R", " r")
+            os.path.basename(self.data_list[idx % len(self.data_list)]).split('.')[0]
         )
         coord = data["coord"]
-        color = data["color"]
+        intensity = data["intensity"]
         scene_id = data_path
         if "semantic_gt" in data.keys():
             segment = data["semantic_gt"].reshape([-1])
@@ -109,7 +101,7 @@ class CSTDataset(Dataset):
         data_dict = dict(
             name=name,
             coord=coord,
-            color=color,
+            intensity=intensity,
             segment=segment,
             instance=instance,
             scene_id=scene_id,
@@ -169,3 +161,6 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
     data = CSTDataset("train", args.dataset_root)
+    print(data.get_data_list())
+    print(data.get_data_name(0))
+    print(data.prepare_train_data(0))

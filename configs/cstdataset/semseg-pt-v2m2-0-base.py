@@ -10,8 +10,8 @@ model = dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=6,
-        num_classes=1,
+        in_channels=4,
+        num_classes=5,
         patch_embed_depth=2,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -53,10 +53,14 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=1,
+    num_classes=5,
     ignore_index=-1,
     names=[
-        "sign",
+        "traffic-sign",
+        "delineator-post",
+        "wires",
+        "wooden-utility-pole",
+        "clutter"
     ],
     train=dict(
         type=dataset_type,
@@ -69,7 +73,7 @@ data = dict(
             # dict(type="RandomRotate", angle=[-1, 1], axis="z", center=[0, 0, 0], p=0.5),
             # dict(type="RandomRotate", angle=[-1 / 64, 1 / 64], axis="x", p=0.5),
             # dict(type="RandomRotate", angle=[-1 / 64, 1 / 64], axis="y", p=0.5),
-            dict(type="RandomScale", scale=[0.9, 1.1]),
+            # dict(type="RandomScale", scale=[0.9, 1.1]),
             # dict(type="RandomShift", shift=[0.2, 0.2, 0.2]),
             dict(type="RandomFlip", p=0.5),
             dict(type="RandomJitter", sigma=0.005, clip=0.02),
@@ -81,24 +85,24 @@ data = dict(
                 grid_size=0.04,
                 hash_type="fnv",
                 mode="train",
-                keys=("coord", "color", "segment"),
+                keys=("coord", "intensity", "segment"),
                 return_discrete_coord=True,
             ),
-            dict(type="SphereCrop", point_max=80000, mode="random"),
+            # dict(type="SphereCrop", point_max=80000, mode="random"),
             dict(type="CenterShift", apply_z=False),
-            dict(type="NormalizeColor"),
+            # dict(type="NormalizeColor"),
             dict(type="ToTensor"),
             dict(
                 type="Collect",
                 keys=("coord", "discrete_coord", "segment"),
-                feat_keys=["coord", "color"],
+                feat_keys=["coord", "intensity"],
             ),
         ],
         test_mode=False,
     ),
     val=dict(
         type=dataset_type,
-        split="val",
+        split="train",
         data_root=data_root,
         transform=[
             dict(type="CenterShift", apply_z=True),
@@ -111,26 +115,26 @@ data = dict(
                 grid_size=0.04,
                 hash_type="fnv",
                 mode="train",
-                keys=("coord", "color", "segment"),
+                keys=("coord", "intensity", "segment"),
                 return_discrete_coord=True,
             ),
             dict(type="CenterShift", apply_z=False),
-            dict(type="NormalizeColor"),
+            # dict(type="NormalizeColor"),
             dict(type="ToTensor"),
             dict(
                 type="Collect",
                 keys=("coord", "discrete_coord", "segment"),
                 offset_keys_dict=dict(offset="coord"),
-                feat_keys=["coord", "color"],
+                feat_keys=["coord", "intensity"],
             ),
         ],
         test_mode=False,
     ),
     test=dict(
         type=dataset_type,
-        split="val",
+        split="train",
         data_root=data_root,
-        transform=[dict(type="CenterShift", apply_z=True), dict(type="NormalizeColor")],
+        transform=[dict(type="CenterShift", apply_z=True)],
         test_mode=True,
         test_cfg=dict(
             voxelize=dict(
@@ -138,7 +142,7 @@ data = dict(
                 grid_size=0.04,
                 hash_type="fnv",
                 mode="test",
-                keys=("coord", "color"),
+                keys=("coord", "intensity"),
                 return_discrete_coord=True,
             ),
             crop=None,
@@ -148,7 +152,7 @@ data = dict(
                 dict(
                     type="Collect",
                     keys=("coord", "discrete_coord", "index"),
-                    feat_keys=("coord", "color"),
+                    feat_keys=("coord", "intensity"),
                 ),
             ],
             aug_transform=[

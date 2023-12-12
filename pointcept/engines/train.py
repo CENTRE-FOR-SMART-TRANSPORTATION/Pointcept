@@ -154,12 +154,7 @@ class Trainer(TrainerBase):
                 # set the model to training mode
                 self.model.train()
                 self.data_iterator = enumerate(self.train_loader)
-                print(self.train_loader)
-                for (i, j) in self.data_iterator:
-                    print(i,j)
-                    for k in j:
-                        print(k)
-                continue
+
                 self.before_epoch()
                 # => run_epoch
                 for (
@@ -175,8 +170,6 @@ class Trainer(TrainerBase):
                 # => after epoch
                 self.after_epoch()
             # => after train
-            print(self.after_train)
-            return
             self.after_train()
 
     def run_step(self):
