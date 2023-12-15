@@ -36,6 +36,7 @@ class Collect(object):
         self.kwargs = kwargs
 
     def __call__(self, data_dict):
+        print("collecting...")
         data = dict()
         if isinstance(self.keys, str):
             self.keys = [self.keys]
@@ -791,6 +792,7 @@ class GridSample(object):
 
     def __call__(self, data_dict):
         assert "coord" in data_dict.keys()
+        print("size before grid sample", data_dict["coord"].shape[0])
         scaled_coord = data_dict["coord"] / np.array(self.grid_size)
         discrete_coord = np.floor(scaled_coord).astype(int)
         min_coord = discrete_coord.min(0) * np.array(self.grid_size)
@@ -828,6 +830,8 @@ class GridSample(object):
                 data_dict["displacement"] = displacement[idx_unique]
             for key in self.keys:
                 data_dict[key] = data_dict[key][idx_unique]
+                
+            print("size after grid sample", data_dict["coord"].shape[0])
             return data_dict
 
         elif self.mode == "test":  # test mode
@@ -912,6 +916,7 @@ class SphereCrop(object):
         )
 
         assert "coord" in data_dict.keys()
+        print("Initial size", data_dict["coord"].shape[0])
         if self.mode == "all":
             # TODO: Optimize
             if "index" not in data_dict.keys():
@@ -919,6 +924,7 @@ class SphereCrop(object):
             data_part_list = []
             # coord_list, color_list, dist2_list, idx_list, offset_list = [], [], [], [], []
             if data_dict["coord"].shape[0] > point_max:
+
                 coord_p, idx_uni = np.random.rand(
                     data_dict["coord"].shape[0]
                 ) * 1e-3, np.array([])
@@ -963,6 +969,7 @@ class SphereCrop(object):
                 data_crop_dict["weight"] = np.zeros(data_dict["coord"].shape[0])
                 data_crop_dict["index"] = data_dict["index"]
                 data_part_list.append(data_crop_dict)
+            
             return data_part_list
         # mode is "random" or "center"
         elif data_dict["coord"].shape[0] > point_max:

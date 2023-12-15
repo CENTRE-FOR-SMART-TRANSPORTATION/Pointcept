@@ -24,10 +24,13 @@ def parse_room(
 ):
     print("Parsing: {}".format(room))
     classes = [
-        "traffic-sign",
-        "delineator-post",
-        "wires",
-        "wooden-utility-pole",
+        'wooden-utility-pole', 
+        'street-lights', 
+        'vegetation', 
+        'delineator-post', 
+        'crossbuck', 
+        'wires', 
+        'traffic-sign',
         "clutter"
     ]
     class2label = {cls: i for i, cls in enumerate(classes)}

@@ -59,7 +59,7 @@ def launch(
     """
     world_size = num_machines * num_gpus_per_machine
     print(f"World_size in launch function: {world_size}")
-    world_size = 1 # temporary, to understand what is happening
+
     if world_size > 1:
         if dist_url == "auto":
             assert (
@@ -106,7 +106,7 @@ def _distributed_worker(
     assert (
         torch.cuda.is_available()
     ), "cuda is not available. Please check your installation."
-    # global_rank = machine_rank * num_gpus_per_machine + local_rank
+    global_rank = machine_rank * num_gpus_per_machine + local_rank
     # print(global_rank, machine_rank, num_gpus_per_machine, local_rank)
     try:
         dist.init_process_group(
@@ -139,4 +139,4 @@ def _distributed_worker(
     # See: https://github.com/facebookresearch/maskrcnn-benchmark/issues/172
     comm.synchronize()
 
-    # main_func(*cfg)
+    main_func(*cfg)

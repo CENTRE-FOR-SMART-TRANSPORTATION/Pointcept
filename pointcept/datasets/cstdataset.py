@@ -84,9 +84,9 @@ class CSTDataset(Dataset):
             )[0]
             cache_name = "pointcept" + data_name.replace(os.path.sep, "-")
             data = shared_dict(cache_name)
-        name = (
-            os.path.basename(self.data_list[idx % len(self.data_list)]).split('.')[0]
-        )
+        # name = (
+        #     os.path.basename(self.data_list[idx % len(self.data_list)]).split('.')[0]
+        # )
         coord = data["coord"]
         intensity = data["intensity"]
         scene_id = data_path
@@ -99,7 +99,7 @@ class CSTDataset(Dataset):
         else:
             instance = np.ones(coord.shape[0]) * -1
         data_dict = dict(
-            name=name,
+            # name=name,
             coord=coord,
             intensity=intensity,
             segment=segment,
