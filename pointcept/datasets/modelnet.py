@@ -30,7 +30,7 @@ class ModelNetDataset(Dataset):
         cache_data=False,
         loop=1,
     ):
-        print("init function for modelnet called")
+        # print("init function for modelnet called")
         super(ModelNetDataset, self).__init__()
         self.data_root = data_root
         self.class_names = dict(zip(class_names, range(len(class_names))))

@@ -32,7 +32,7 @@ class S3DISDataset(Dataset):
         cache=False,
         loop=1,
     ):
-        print("init function for s3disdataset called...")
+        # print("init function for s3disdataset called...")
         #traceback.print_stack(file=sys.stdout)
         super(S3DISDataset, self).__init__()
         self.data_root = data_root
@@ -44,14 +44,14 @@ class S3DISDataset(Dataset):
         )  # force make loop = 1 while in test mode
         self.test_mode = test_mode
         self.test_cfg = test_cfg if test_mode else None
-        print("Printing attributes...")
-        print(self.data_root)
-        print(self.split)
-        print(self.transform, self.transform.transforms)
-        print(self.cache)
-        print(self.loop)
-        print(self.test_mode)
-        print(self.test_cfg)
+        # print("Printing attributes...")
+        # print(self.data_root)
+        # print(self.split)
+        # print(self.transform, self.transform.transforms)
+        # print(self.cache)
+        # print(self.loop)
+        # print(self.test_mode)
+        # print(self.test_cfg)
         if test_mode:
             self.test_voxelize = TRANSFORMS.build(self.test_cfg.voxelize)
             self.test_crop = (

@@ -58,7 +58,7 @@ def launch(
         args (tuple): arguments passed to main_func
     """
     world_size = num_machines * num_gpus_per_machine
-    print(f"World_size in launch function: {world_size}")
+    # print(f"World_size in launch function: {world_size}")
 
     if world_size > 1:
         if dist_url == "auto":
@@ -72,7 +72,7 @@ def launch(
             logger.warning(
                 "file:// is not a reliable init_method in multi-machine jobs. Prefer tcp://"
             )
-        print("Spawning multiple processes...")
+        # print("Spawning multiple processes...")
         mp.spawn(
             _distributed_worker,
             nprocs=num_gpus_per_machine,
@@ -88,7 +88,7 @@ def launch(
             daemon=False,
         )
     else:
-        print("Only using 1 process...")
+        # print("Only using 1 process...")
         #print("Calling main_func with", *cfg)
         main_func(*cfg)
 

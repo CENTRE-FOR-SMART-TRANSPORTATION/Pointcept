@@ -33,7 +33,7 @@ class CSTDataset(Dataset):
         cache=False,
         loop=1,
     ):
-        print("init function for CSTDataset called...")
+        # print("init function for CSTDataset called...")
         #traceback.print_stack(file=sys.stdout)
         super(CSTDataset, self).__init__()
         self.data_root = data_root
@@ -45,7 +45,7 @@ class CSTDataset(Dataset):
         )  # force make loop = 1 while in test mode
         self.test_mode = test_mode
         self.test_cfg = test_cfg if test_mode else None
-        print("Printing attributes...")
+        # print("Printing attributes...")
         if test_mode:
             self.test_voxelize = TRANSFORMS.build(self.test_cfg.voxelize)
             self.test_crop = (
@@ -55,7 +55,7 @@ class CSTDataset(Dataset):
             self.aug_transform = [Compose(aug) for aug in self.test_cfg.aug_transform]
 
         self.data_list = self.get_data_list()
-        print(self.data_list)
+        # print(self.data_list)
         logger = get_root_logger()
         logger.info(
             "Totally {} x {} samples in {} set.".format(

@@ -2,9 +2,16 @@ import torch
 from pointcept.models import build_model
 from collections import OrderedDict
 
+print(torch.backends.cudnn.version())
+print(torch.__version__)
+print(torch.version.cuda)
+print(torch.backends.cudnn.is_available())
+
+
+torch.cuda.empty_cache()
 model = torch.load('/home/gurveer/Desktop/models/model_best.pth')
 
-unlabelled_data = torch.randn((10000, 4))
+unlabelled_data = torch.randn((1000, 4))
 
 state_dict = model["state_dict"]
 
@@ -29,8 +36,10 @@ model.load_state_dict(new_state_dict)
 
 model.eval()
 
+dev = 'cuda'
+model = model.to(dev)
 data_dict = OrderedDict()
-data_dict["coord"] = unlabelled_data[:, 3]
-data_dict["feat"] = unlabelled_data
-data_dict["offset"] = 1
-print(model(data_dict))
+data_dict["coord"] = torch.tensor(unlabelled_data[:, :3], device=dev)
+data_dict["feat"] = torch.tensor(unlabelled_data,  device=dev)
+data_dict["offset"] = torch.tensor([1],  device=dev)
+model(data_dict)

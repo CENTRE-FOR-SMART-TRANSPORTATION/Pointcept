@@ -286,10 +286,10 @@ class PointTransformerSeg(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, data_dict):
-        print("trying to read data dict")
-        print(type(data_dict))
-        for k in data_dict:
-            print(k, data_dict[k].shape)
+        # print("trying to read data dict")
+        # print(type(data_dict))
+        # for k in data_dict:
+            # print(k, data_dict[k].shape)
         p0 = data_dict["coord"]
         x0 = data_dict["feat"]
         o0 = data_dict["offset"].int()

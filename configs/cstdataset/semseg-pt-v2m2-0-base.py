@@ -12,14 +12,14 @@ model = dict(
     backbone=dict(
         type="PointTransformer-Seg50",
         in_channels=4,
-        num_classes=8,
+        num_classes=9,
     ),
     criteria=[dict(type="CrossEntropyLoss", loss_weight=1.0, ignore_index=-1)],
 )
 
 
 # scheduler settings
-epoch = 100
+epoch = 50
 optimizer = dict(type="AdamW", lr=0.006, weight_decay=0.05)
 scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
 
@@ -35,7 +35,7 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=8,
+    num_classes=9,
     ignore_index=-1,
     names=[
         'wooden-utility-pole', 
@@ -45,6 +45,7 @@ data = dict(
         'crossbuck', 
         'wires', 
         'traffic-sign',
+        'guide-sign',
         "clutter"
     ],
     train=dict(

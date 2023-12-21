@@ -177,8 +177,8 @@ class Config:
 
     @staticmethod
     def _file2dict(filename, use_predefined_variables=True):
-        print()
-        print("method: Config._file2dict")
+        # print()
+        # print("method: Config._file2dict")
         filename = osp.abspath(osp.expanduser(filename))
         check_file_exist(filename)
         fileExtname = osp.splitext(filename)[1]
@@ -340,9 +340,9 @@ class Config:
 
     @staticmethod
     def fromfile(filename, use_predefined_variables=True, import_custom_modules=True):
-        print()
-        print("method: Config.fromfile")
-        print(f"Parsing config from file: {filename}")
+        # print()
+        # print("method: Config.fromfile")
+        # print(f"Parsing config from file: {filename}")
         cfg_dict, cfg_text = Config._file2dict(filename, use_predefined_variables)
         if import_custom_modules and cfg_dict.get("custom_imports", None):
             print("Importing custom modules...", **cfg_dict["custom_imports"])
