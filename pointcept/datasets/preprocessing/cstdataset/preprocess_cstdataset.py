@@ -24,14 +24,18 @@ def parse_room(
 ):
     print("Parsing: {}".format(room))
     classes = [
+        'stop-sign',
+        'regulatory-sign', 
+        'guide-sign', 
+        'scarecrow', 
+        'traffic-sign', 
+        'fence', 
         'wooden-utility-pole', 
+        'warning-sign', 
         'street-lights', 
-        'vegetation', 
         'delineator-post', 
         'crossbuck', 
-        'wires', 
-        'traffic-sign',
-        "clutter"
+        'wires'
     ]
     class2label = {cls: i for i, cls in enumerate(classes)}
     source_dir = os.path.join(dataset_root, room)
@@ -58,10 +62,7 @@ def parse_room(
         instance_gt = np.repeat(object_id, coords.shape[0])
         instance_gt = instance_gt.reshape([-1, 1])
 
-        print(object_name, len(coords), len(intensity), class_name, semantic_gt[0])
-        print(coords.shape)
-        print(intensity.shape)
-        print(semantic_gt.shape)
+        print(f"{coords.shape} points for {class_name}/{object_name}")
         room_coords.append(coords)
         room_intensity.append(intensity)
         room_semantic_gt.append(semantic_gt)

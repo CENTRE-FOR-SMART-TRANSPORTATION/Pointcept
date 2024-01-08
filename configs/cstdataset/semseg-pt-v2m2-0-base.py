@@ -1,6 +1,6 @@
 _base_ = ["../_base_/default_runtime.py"]
 # misc custom setting
-batch_size = 2  # bs: total bs in all gpus
+batch_size = 1  # bs: total bs in all gpus
 mix_prob = 0.8
 empty_cache = False
 enable_amp = True
@@ -12,14 +12,14 @@ model = dict(
     backbone=dict(
         type="PointTransformer-Seg50",
         in_channels=4,
-        num_classes=9,
+        num_classes=12,
     ),
     criteria=[dict(type="CrossEntropyLoss", loss_weight=1.0, ignore_index=-1)],
 )
 
 
 # scheduler settings
-epoch = 50
+epoch = 100
 optimizer = dict(type="AdamW", lr=0.006, weight_decay=0.05)
 scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
 
@@ -35,18 +35,21 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=9,
+    num_classes=12,
     ignore_index=-1,
     names=[
-        'wooden-utility-pole', 
-        'street-lights', 
-        'vegetation', 
-        'delineator-post', 
-        'crossbuck', 
-        'wires', 
-        'traffic-sign',
-        'guide-sign',
-        "clutter"
+    'stop-sign',
+    'regulatory-sign', 
+    'guide-sign', 
+    'scarecrow', 
+    'traffic-sign', 
+    'fence', 
+    'wooden-utility-pole', 
+    'warning-sign', 
+    'street-lights', 
+    'delineator-post', 
+    'crossbuck', 
+    'wires'
     ],
     train=dict(
         type=dataset_type,
