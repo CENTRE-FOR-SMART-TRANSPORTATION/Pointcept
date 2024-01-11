@@ -123,6 +123,7 @@ class CSTDataset(Dataset):
         # load data
         data_dict = self.get_data(idx)
         segment = data_dict.pop("segment")
+        data_dict["index"] = np.arange(len(data_dict["coord"]))
         # removing transform
         # data_dict = self.transform(data_dict)
         # data_dict_list = []
@@ -130,14 +131,14 @@ class CSTDataset(Dataset):
         #     data_dict_list.append(aug(deepcopy(data_dict)))
 
         input_dict_list = [data_dict]
-        for data in data_dict_list:
-            data_part_list = self.test_voxelize(data)
-            for data_part in data_part_list:
-                if self.test_crop:
-                    data_part = self.test_crop(data_part)
-                else:
-                    data_part = [data_part]
-                input_dict_list += data_part
+        # for data in data_dict_list:
+        #     data_part_list = self.test_voxelize(data)
+        #     for data_part in data_part_list:
+        #         if self.test_crop:
+        #             data_part = self.test_crop(data_part)
+        #         else:
+        #             data_part = [data_part]
+        #         input_dict_list += data_part
 
         for i in range(len(input_dict_list)):
             input_dict_list[i] = self.post_transform(input_dict_list[i])
