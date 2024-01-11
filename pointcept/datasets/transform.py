@@ -861,7 +861,7 @@ class GridSample(object):
                     else:
                         data_part[key] = data_dict[key]
                 data_part_list.append(data_part)
-            print(f"Size changed from {len(data_dict["coord"])} to {len(data_part["coord"])}")
+            print(f"Size changed from {len(data_dict['coord'])} to {len(data_part['coord'])}")
             return data_part_list
         else:
             raise NotImplementedError
