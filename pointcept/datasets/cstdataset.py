@@ -87,11 +87,11 @@ class CSTDataset(Dataset):
         # name = (
         #     os.path.basename(self.data_list[idx % len(self.data_list)]).split('.')[0]
         # )
-        coord = data["coord"]
-        intensity = data["intensity"]
+        coord = np.asarray(data["coord"])
+        intensity = np.asarray(data["intensity"])
         scene_id = data_path
         if "semantic_gt" in data.keys():
-            segment = data["semantic_gt"].reshape([-1])
+            segment = np.asarray(data["semantic_gt"].reshape([-1]))
         else:
             segment = np.ones(coord.shape[0]) * -1
         if "instance_gt" in data.keys():
@@ -116,14 +116,16 @@ class CSTDataset(Dataset):
     def prepare_train_data(self, idx):
         # load data
         data_dict = self.get_data(idx)
-        data_dict = self.transform(data_dict)
+        # removing the transform
+        # data_dict = self.transform(data_dict)
         return data_dict
 
     def prepare_test_data(self, idx):
         # load data
         data_dict = self.get_data(idx)
         segment = data_dict.pop("segment")
-        data_dict = self.transform(data_dict)
+        # removing transform
+        # data_dict = self.transform(data_dict)
         data_dict_list = []
         for aug in self.aug_transform:
             data_dict_list.append(aug(deepcopy(data_dict)))

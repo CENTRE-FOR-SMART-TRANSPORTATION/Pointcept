@@ -58,6 +58,7 @@ class TrainerBase:
             # => before train
             self.before_train()
             for self.epoch in range(self.start_epoch, self.max_epoch):
+                print("running epoch")
                 # => before epoch
                 self.before_epoch()
                 # => run_epoch
@@ -72,6 +73,7 @@ class TrainerBase:
                     # => after_step
                     self.after_step()
                 # => after epoch
+                print(self.hooks)
                 self.after_epoch()
             # => after train
             # print(self.after_t)
@@ -103,6 +105,7 @@ class TrainerBase:
 
     def after_train(self):
         # Sync GPU before running train hooks
+        print("in after train", self.hooks)
         comm.synchronize()
         for h in self.hooks:
             h.after_train()

@@ -24,18 +24,8 @@ def parse_room(
 ):
     print("Parsing: {}".format(room))
     classes = [
-        'stop-sign',
-        'regulatory-sign', 
-        'guide-sign', 
-        'scarecrow', 
-        'traffic-sign', 
-        'fence', 
         'wooden-utility-pole', 
-        'warning-sign', 
-        'street-lights', 
-        'delineator-post', 
-        'crossbuck', 
-        'wires'
+        'clutter'
     ]
     class2label = {cls: i for i, cls in enumerate(classes)}
     source_dir = os.path.join(dataset_root, room)
@@ -53,9 +43,13 @@ def parse_room(
     for object_id, object_path in enumerate(object_path_list):
         object_name = os.path.basename(object_path).split("_")[0]
         obj = np.loadtxt(object_path)
-        coords = obj[:, :3]
-        intensity = obj[:, 3]
-        intensity = intensity.reshape([-1, 1])
+        try:
+            coords = obj[:, :3]
+            intensity = obj[:, 3]
+            intensity = intensity.reshape([-1, 1])
+        except IndexError:
+            print("#################### error", object_path)
+            continue
         class_name = object_name if object_name in classes else "clutter"
         semantic_gt = np.repeat(class2label[class_name], coords.shape[0])
         semantic_gt = semantic_gt.reshape([-1, 1])

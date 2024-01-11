@@ -12,7 +12,7 @@ model = dict(
     backbone=dict(
         type="PointTransformer-Seg50",
         in_channels=4,
-        num_classes=12,
+        num_classes=2,
     ),
     criteria=[dict(type="CrossEntropyLoss", loss_weight=1.0, ignore_index=-1)],
 )
@@ -35,21 +35,11 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=12,
+    num_classes=2,
     ignore_index=-1,
     names=[
-    'stop-sign',
-    'regulatory-sign', 
-    'guide-sign', 
-    'scarecrow', 
-    'traffic-sign', 
-    'fence', 
     'wooden-utility-pole', 
-    'warning-sign', 
-    'street-lights', 
-    'delineator-post', 
-    'crossbuck', 
-    'wires'
+    'clutter'
     ],
     train=dict(
         type=dataset_type,
@@ -150,27 +140,6 @@ data = dict(
             ],
             aug_transform=[
                 [dict(type="RandomScale", scale=[0.9, 0.9])],
-                [dict(type="RandomScale", scale=[0.95, 0.95])],
-                [dict(type="RandomScale", scale=[1, 1])],
-                [dict(type="RandomScale", scale=[1.05, 1.05])],
-                [dict(type="RandomScale", scale=[1.1, 1.1])],
-                [
-                    dict(type="RandomScale", scale=[0.9, 0.9]),
-                    dict(type="RandomFlip", p=1),
-                ],
-                [
-                    dict(type="RandomScale", scale=[0.95, 0.95]),
-                    dict(type="RandomFlip", p=1),
-                ],
-                [dict(type="RandomScale", scale=[1, 1]), dict(type="RandomFlip", p=1)],
-                [
-                    dict(type="RandomScale", scale=[1.05, 1.05]),
-                    dict(type="RandomFlip", p=1),
-                ],
-                [
-                    dict(type="RandomScale", scale=[1.1, 1.1]),
-                    dict(type="RandomFlip", p=1),
-                ],
             ],
         ),
     ),
