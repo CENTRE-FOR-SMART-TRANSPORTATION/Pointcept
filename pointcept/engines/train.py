@@ -172,6 +172,7 @@ class Trainer(TrainerBase):
                     self.after_step()
                 # => after epoch
                 self.after_epoch()
+                break
             # => after train
             self.after_train()
 
