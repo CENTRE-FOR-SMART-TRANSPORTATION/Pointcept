@@ -116,8 +116,7 @@ class CSTDataset(Dataset):
     def prepare_train_data(self, idx):
         # load data
         data_dict = self.get_data(idx)
-        # removing the transform
-        # data_dict = self.transform(data_dict)
+        data_dict = self.transform(data_dict)
         return data_dict
 
     def prepare_test_data(self, idx):
@@ -126,19 +125,19 @@ class CSTDataset(Dataset):
         segment = data_dict.pop("segment")
         # removing transform
         # data_dict = self.transform(data_dict)
-        data_dict_list = []
-        for aug in self.aug_transform:
-            data_dict_list.append(aug(deepcopy(data_dict)))
+        # data_dict_list = []
+        # for aug in self.aug_transform:
+        #     data_dict_list.append(aug(deepcopy(data_dict)))
 
-        input_dict_list = []
-        for data in data_dict_list:
-            data_part_list = self.test_voxelize(data)
-            for data_part in data_part_list:
-                if self.test_crop:
-                    data_part = self.test_crop(data_part)
-                else:
-                    data_part = [data_part]
-                input_dict_list += data_part
+        input_dict_list = [data_dict]
+        # for data in data_dict_list:
+        #     data_part_list = self.test_voxelize(data)
+        #     for data_part in data_part_list:
+        #         if self.test_crop:
+        #             data_part = self.test_crop(data_part)
+        #         else:
+        #             data_part = [data_part]
+        #         input_dict_list += data_part
 
         for i in range(len(input_dict_list)):
             input_dict_list[i] = self.post_transform(input_dict_list[i])
