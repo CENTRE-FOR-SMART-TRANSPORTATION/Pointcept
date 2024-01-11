@@ -125,11 +125,11 @@ class CSTDataset(Dataset):
         segment = data_dict.pop("segment")
         # removing transform
         # data_dict = self.transform(data_dict)
-        # data_dict_list = []
+        data_dict_list = [data_dict]
         # for aug in self.aug_transform:
         #     data_dict_list.append(aug(deepcopy(data_dict)))
 
-        input_dict_list = [data_dict]
+        input_dict_list = []
         for data in data_dict_list:
             data_part_list = self.test_voxelize(data)
             for data_part in data_part_list:
