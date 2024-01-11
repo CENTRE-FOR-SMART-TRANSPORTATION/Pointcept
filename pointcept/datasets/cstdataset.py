@@ -126,7 +126,7 @@ class CSTDataset(Dataset):
         data_dict["index"] = np.arange(len(data_dict["coord"]))
         # removing transform
         # data_dict = self.transform(data_dict)
-        # data_dict_list = []
+        data_dict_list = [data_dict]
         # for aug in self.aug_transform:
         #     data_dict_list.append(aug(deepcopy(data_dict)))
 
