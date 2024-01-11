@@ -19,8 +19,8 @@ model = dict(
 
 
 # scheduler settings
-epoch = 4
-eval_epoch = 4
+epoch = 1
+eval_epoch = 1
 optimizer = dict(type="AdamW", lr=0.006, weight_decay=0.05)
 scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
 
