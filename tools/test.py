@@ -77,15 +77,19 @@ def main_worker(cfg):
         test_sampler = torch.utils.data.distributed.DistributedSampler(test_dataset)
     else:
         test_sampler = None
+        print(f"Test sampler is {test_sampler} as there is only 1 process")
+    
+    print(f"Collate_fn is {tester.collate_fn}")
     test_loader = torch.utils.data.DataLoader(
         test_dataset,
         batch_size=cfg.batch_size_test_per_gpu,
         shuffle=False,
-        num_workers=cfg.batch_size_test_per_gpu,
-        pin_memory=True,
+        num_workers=0,
+        pin_memory=False,
         sampler=test_sampler,
         collate_fn=tester.collate_fn,
     )
+    
     tester(cfg, test_loader, model)
 
 

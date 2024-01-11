@@ -231,28 +231,41 @@ class Trainer(TrainerBase):
         else:
             train_sampler = None
 
-        init_fn = (
-            partial(
-                worker_init_fn,
-                num_workers=self.cfg.num_worker_per_gpu,
-                rank=comm.get_rank(),
-                seed=self.cfg.seed,
-            )
-            if self.cfg.seed is not None
-            else None
-        )
+        # init_fn = (
+        #     partial(
+        #         worker_init_fn,
+        #         num_workers=self.cfg.num_worker_per_gpu,
+        #         rank=comm.get_rank(),
+        #         seed=self.cfg.seed,
+        #     )
+        #     if self.cfg.seed is not None
+        #     else None
+        # )
 
+        # train_loader = torch.utils.data.DataLoader(
+        #     train_data,
+        #     batch_size=self.cfg.batch_size_per_gpu,
+        #     shuffle=(train_sampler is None),
+        #     num_workers=self.cfg.num_worker_per_gpu,
+        #     sampler=train_sampler,
+        #     collate_fn=partial(point_collate_fn, mix_prob=self.cfg.mix_prob),
+        #     pin_memory=True,
+        #     worker_init_fn=init_fn,
+        #     drop_last=True,
+        #     persistent_workers=True,
+        # )
+
+        # removing all multiprocessing and workers
         train_loader = torch.utils.data.DataLoader(
             train_data,
             batch_size=self.cfg.batch_size_per_gpu,
             shuffle=(train_sampler is None),
-            num_workers=self.cfg.num_worker_per_gpu,
+            num_workers=0,
             sampler=train_sampler,
             collate_fn=partial(point_collate_fn, mix_prob=self.cfg.mix_prob),
-            pin_memory=True,
-            worker_init_fn=init_fn,
-            drop_last=True,
-            persistent_workers=True,
+            pin_memory=False,
+            drop_last=False,
+            persistent_workers=False,
         )
         return train_loader
 
