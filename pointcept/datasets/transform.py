@@ -802,38 +802,40 @@ class GridSample(object):
         key_sort = key[idx_sort]
         _, inverse, count = np.unique(key_sort, return_inverse=True, return_counts=True)
         if self.mode == "train":  # train mode
-            idx_select = (
-                np.cumsum(np.insert(count, 0, 0)[0:-1])
-                + np.random.randint(0, count.max(), count.size) % count
-            )
-            idx_unique = idx_sort[idx_select]
-            if "sampled_index" in data_dict:
-                # for ScanNet data efficient, we need to make sure labeled point is sampled.
-                idx_unique = np.unique(
-                    np.append(idx_unique, data_dict["sampled_index"])
-                )
-                mask = np.zeros_like(data_dict["segment"]).astype(np.bool)
-                mask[data_dict["sampled_index"]] = True
-                data_dict["sampled_index"] = np.where(mask[idx_unique])[0]
-            if self.return_discrete_coord:
-                data_dict["discrete_coord"] = discrete_coord[idx_unique]
-            if self.return_min_coord:
-                data_dict["min_coord"] = min_coord.reshape([1, 3])
-            if self.return_displacement:
-                displacement = (
-                    scaled_coord - discrete_coord - 0.5
-                )  # [0, 1] -> [-0.5, 0.5] displacement to center
-                if self.project_displacement:
-                    displacement = np.sum(
-                        displacement * data_dict["normal"], axis=-1, keepdims=True
-                    )
-                data_dict["displacement"] = displacement[idx_unique]
-            for key in self.keys:
-                data_dict[key] = data_dict[key][idx_unique]
+            # for our dataset, we don't want any transformations
+            raise NotImplementedError
+            # idx_select = (
+            #     np.cumsum(np.insert(count, 0, 0)[0:-1])
+            #     + np.random.randint(0, count.max(), count.size) % count
+            # )
+            # idx_unique = idx_sort[idx_select]
+            # if "sampled_index" in data_dict:
+            #     # for ScanNet data efficient, we need to make sure labeled point is sampled.
+            #     idx_unique = np.unique(
+            #         np.append(idx_unique, data_dict["sampled_index"])
+            #     )
+            #     mask = np.zeros_like(data_dict["segment"]).astype(np.bool)
+            #     mask[data_dict["sampled_index"]] = True
+            #     data_dict["sampled_index"] = np.where(mask[idx_unique])[0]
+            # if self.return_discrete_coord:
+            #     data_dict["discrete_coord"] = discrete_coord[idx_unique]
+            # if self.return_min_coord:
+            #     data_dict["min_coord"] = min_coord.reshape([1, 3])
+            # if self.return_displacement:
+            #     displacement = (
+            #         scaled_coord - discrete_coord - 0.5
+            #     )  # [0, 1] -> [-0.5, 0.5] displacement to center
+            #     if self.project_displacement:
+            #         displacement = np.sum(
+            #             displacement * data_dict["normal"], axis=-1, keepdims=True
+            #         )
+            #     data_dict["displacement"] = displacement[idx_unique]
+            # for key in self.keys:
+            #     data_dict[key] = data_dict[key][idx_unique]
                 
-            # print("size after grid sample", data_dict["coord"].shape[0])
-            return data_dict
-
+            # # print("size after grid sample", data_dict["coord"].shape[0])
+            # return data_dict
+ 
         elif self.mode == "test":  # test mode
             data_part_list = []
             for i in range(count.max()):
@@ -859,6 +861,7 @@ class GridSample(object):
                     else:
                         data_part[key] = data_dict[key]
                 data_part_list.append(data_part)
+            print(f"Size changed from {len(data_dict["coord"])} to {len(data_part["coord"])}")
             return data_part_list
         else:
             raise NotImplementedError

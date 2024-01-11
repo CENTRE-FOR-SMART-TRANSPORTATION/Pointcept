@@ -130,14 +130,14 @@ class CSTDataset(Dataset):
         #     data_dict_list.append(aug(deepcopy(data_dict)))
 
         input_dict_list = [data_dict]
-        # for data in data_dict_list:
-        #     data_part_list = self.test_voxelize(data)
-        #     for data_part in data_part_list:
-        #         if self.test_crop:
-        #             data_part = self.test_crop(data_part)
-        #         else:
-        #             data_part = [data_part]
-        #         input_dict_list += data_part
+        for data in data_dict_list:
+            data_part_list = self.test_voxelize(data)
+            for data_part in data_part_list:
+                if self.test_crop:
+                    data_part = self.test_crop(data_part)
+                else:
+                    data_part = [data_part]
+                input_dict_list += data_part
 
         for i in range(len(input_dict_list)):
             input_dict_list[i] = self.post_transform(input_dict_list[i])
