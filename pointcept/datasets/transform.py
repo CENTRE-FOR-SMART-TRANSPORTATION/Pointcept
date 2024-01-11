@@ -793,9 +793,9 @@ class GridSample(object):
     def __call__(self, data_dict):
         assert "coord" in data_dict.keys()
         # print("size before grid sample", data_dict["coord"].shape[0])
-        scaled_coord = data_dict["coord"] / np.array(self.grid_size)
-        discrete_coord = np.floor(scaled_coord).astype(int)
-        min_coord = discrete_coord.min(0) * np.array(self.grid_size)
+        scaled_coord = data_dict["coord"]
+        discrete_coord = np.copy(scaled_coord)
+        min_coord = discrete_coord.min(0)
         discrete_coord -= discrete_coord.min(0)
         key = self.hash(discrete_coord)
         idx_sort = np.argsort(key)
