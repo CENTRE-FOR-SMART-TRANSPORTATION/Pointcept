@@ -12,7 +12,7 @@ model = dict(
     backbone=dict(
         type="PointTransformer-Seg50",
         in_channels=4,
-        num_classes=2,
+        num_classes=13,
     ),
     criteria=[dict(type="CrossEntropyLoss", loss_weight=1.0, ignore_index=-1)],
 )
@@ -35,11 +35,22 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=2,
+    num_classes=13,
     ignore_index=-1,
     names=[
-    'wooden-utility-pole', 
-    'clutter'
+        'traffic-sign',
+        'scarecrow',
+        'wooden-utility-pole',
+        'stop-sign', 
+        'fence', 
+        'highway-guardrails', 
+        'guide-sign', 
+        'delineator-post', 
+        'wires', 
+        'street-lights', 
+        'warning-sign', 
+        'crossbuck', 
+        'regulatory-sign'
     ],
     train=dict(
         type=dataset_type,
