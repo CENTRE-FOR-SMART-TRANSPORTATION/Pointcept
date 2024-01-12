@@ -177,3 +177,6 @@ data = dict(
         ),
     ),
 )
+
+# first set num_workers in the default_runtime.py to be 1
+# sh scripts/train.sh -g 1 -d cstdataset -c semseg-pt-v2m2-0-base-err-file -n semseg-pt-v2m2-0-base-err-file

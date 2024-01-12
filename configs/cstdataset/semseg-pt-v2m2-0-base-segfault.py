@@ -1,6 +1,6 @@
 _base_ = ["../_base_/default_runtime.py"]
 # misc custom setting
-batch_size = 1  # bs: total bs in all gpus
+batch_size = 2  # bs: total bs in all gpus
 mix_prob = 0.8
 empty_cache = False
 enable_amp = True
@@ -177,3 +177,6 @@ data = dict(
         ),
     ),
 )
+
+# first set num_workers in default_runtime.py to be 16
+# sh scripts/train.sh -g 2 -d cstdataset -c semseg-pt-v2m2-0-base-segfault -n semseg-pt-v2m2-0-base-segfault
