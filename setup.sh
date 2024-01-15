@@ -29,3 +29,8 @@ cd ../..
 
 # Open3D (visualization, optional)
 pip install open3d
+
+# create a folder in this directory and create a link to the preprocessed data folder
+# cd Pointcept
+# mkdir data
+# ln -s ~/Desktop/datasets/preprocessed_norm_no_voxel_no_clutter/ ~/Desktop/Pointcept/data/cstdataset
