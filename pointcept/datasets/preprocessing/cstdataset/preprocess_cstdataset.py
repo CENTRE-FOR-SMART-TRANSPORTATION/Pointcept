@@ -24,8 +24,7 @@ def parse_room(
 ):
     print("Parsing: {}".format(room))
     classes = [
-        'wooden-utility-pole', 
-        'clutter'
+'stop-sign', 'warning-sign', 'highway-guardrails', 'transmission-tower', 'clutter', 'guide-sign', 'delineator-post', 'wires', 'regulatory-sign', 'wooden-utility-pole', 'street-lights', 'crossbuck'
     ]
     class2label = {cls: i for i, cls in enumerate(classes)}
     source_dir = os.path.join(dataset_root, room)

@@ -19,8 +19,8 @@ model = dict(
 
 
 # scheduler settings
-epoch = 1
-eval_epoch = 1
+epoch = 50
+eval_epoch = 50
 optimizer = dict(type="AdamW", lr=0.006, weight_decay=0.05)
 scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
 
@@ -39,19 +39,7 @@ data = dict(
     num_classes=12,
     ignore_index=-1,
     names=[
-    'stop-sign',
-    'regulatory-sign', 
-    'guide-sign', 
-    'scarecrow', 
-    'traffic-sign', 
-    'fence', 
-    'wooden-utility-pole', 
-    'warning-sign', 
-    'street-lights', 
-    'delineator-post', 
-    'crossbuck', 
-    'wires'
-    ],
+'stop-sign', 'warning-sign', 'highway-guardrails', 'transmission-tower', 'clutter', 'guide-sign', 'delineator-post', 'wires', 'regulatory-sign', 'wooden-utility-pole', 'street-lights', 'crossbuck'],
     train=dict(
         type=dataset_type,
         split="train",
