@@ -101,7 +101,7 @@ class TesterBase:
             sampler=test_sampler,
             collate_fn=self.__class__.collate_fn,
         )
-        return test_loader
+        return te            print(f"test epoch in cfg is {cfg.test_epoch}")st_loader
 
     def test(self):
         raise NotImplementedError
