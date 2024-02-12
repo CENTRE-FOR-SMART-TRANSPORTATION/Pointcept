@@ -24,9 +24,9 @@ def parse_room(
 ):
     print("Parsing: {}".format(room))
     classes = [
-    'solid-edge-lines', 'dash-solid-center-lines', 'lane', 'dashed-center-line', 'shoulder', 'vegetation', 'clutter']
+    'highway-guardrails',
+    'clutter']
     class2label = {cls: i for i, cls in enumerate(classes)}
-    # class2label['clutter'] = -1
     source_dir = os.path.join(dataset_root, room)
     save_path = os.path.join(output_root, room) + ".pth"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)

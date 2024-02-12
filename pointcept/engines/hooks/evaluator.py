@@ -185,6 +185,17 @@ class SemSegEvaluator(HookBase):
                     accuracy=acc_class[i],
                 )
             )
+            self.trainer.logger.info(
+                "Class_{idx}-{name} Result: iou/accuracy/idx/int/uni/tar {iou:.4f}/{accuracy:.4f}/{idx}/{int}/{uni}/{tar}".format(
+                    idx=i,
+                    name=self.trainer.cfg.data.names[i],
+                    iou=iou_class[i],
+                    accuracy=acc_class[i],
+                    int={intersection[i]},
+                    uni={union[i]},
+                    tar={target[i]}
+                )
+            )
         current_epoch = self.trainer.epoch + 1
         if self.trainer.writer is not None:
             self.trainer.writer.add_scalar("val/loss", loss_avg, current_epoch)

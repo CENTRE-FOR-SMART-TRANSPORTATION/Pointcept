@@ -151,6 +151,37 @@ class SemSegTester(object):
                     m_iou=m_iou,
                 )
             )
+            if cfg.dataset_type == "CSTDataset":
+                from tabulate import tabulate
+                class_names = cfg.data.names
+                num_classes = cfg.data.num_classes
+                def print_matrix(matrix, filename):
+                    headers = ["", *class_names]
+                    data = [[class_names[i], *matrix[i]] for i in range(len(matrix))]
+                    table = tabulate(data, headers, tablefmt="grid")
+                    print(table)
+
+                labels = pred
+                ground_truth = segment
+
+                matrix = [[0 for _ in range(num_classes)] for _ in range(num_classes)]
+                totals = [0 for _ in range(num_classes)]
+                for i in ground_truth:
+                    totals[i] += 1
+                for i in range(len(totals)):
+                    if totals[i] == 0:
+                        totals[i] = -1
+
+                for gt, l in zip(ground_truth, labels):
+                    matrix[gt][l] += 1
+
+                print_matrix(matrix, "2anum.xlsx")
+                for i in range(len(matrix)):
+                    for j in range(len(matrix[0])):
+                        matrix[i][j] /= totals[i]
+                        matrix[i][j] = round(matrix[i][j], 3)
+                print_matrix(matrix, "2b.xlsx")
+
             if cfg.dataset_type == "ScanNetDataset":
                 np.savetxt(
                     os.path.join(save_path, "submit", "{}.txt".format(data_name)),

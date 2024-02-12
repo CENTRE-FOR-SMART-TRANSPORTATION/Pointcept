@@ -30,7 +30,7 @@ class PointBatchNorm(nn.Module):
 
     def __init__(self, embed_channels):
         super().__init__()
-        self.norm = nn.BatchNorm1d(embed_channels)
+        self.norm = nn.InstanceNorm1d(embed_channels)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         if input.dim() == 3:

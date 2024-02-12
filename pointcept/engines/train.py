@@ -264,7 +264,7 @@ class Trainer(TrainerBase):
             sampler=train_sampler,
             collate_fn=partial(point_collate_fn, mix_prob=self.cfg.mix_prob),
             pin_memory=False,
-            drop_last=False,
+            drop_last=True,
             persistent_workers=False,
         )
         return train_loader

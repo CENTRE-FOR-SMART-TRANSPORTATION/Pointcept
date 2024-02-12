@@ -10,18 +10,38 @@ enable_amp = True
 model = dict(
     type="DefaultSegmentor",
     backbone=dict(
-        type="PointTransformer-Seg50",
+        type="PT-v2m2",
         in_channels=4,
-        num_classes=12,
+        num_classes=7,
+        patch_embed_depth=1,
+        patch_embed_channels=48,
+        patch_embed_groups=6,
+        patch_embed_neighbours=8,
+        enc_depths=(2, 2, 6, 2),
+        enc_channels=(96, 192, 384, 512),
+        enc_groups=(12, 24, 48, 64),
+        enc_neighbours=(16, 16, 16, 16),
+        dec_depths=(1, 1, 1, 1),
+        dec_channels=(48, 96, 192, 384),
+        dec_groups=(6, 12, 24, 48),
+        dec_neighbours=(16, 16, 16, 16),
+        grid_sizes=(0.15, 0.375, 0.9375, 2.34375),  # x3, x2.5, x2.5, x2.5
+        attn_qkv_bias=True,
+        pe_multiplier=False,
+        pe_bias=True,
+        attn_drop_rate=0.0,
+        drop_path_rate=0.3,
+        enable_checkpoint=False,
+        unpool_backend="map",  # map / interp
     ),
-    criteria=[dict(type="CrossEntropyLoss", loss_weight=1.0, ignore_index=-1)],
+    criteria=[dict(type="FocalLoss", gamma=2.0, alpha=0.5, loss_weight=1.0, ignore_index=-1)],
 )
 
 
 # scheduler settings
-epoch = 50
-eval_epoch = 50
-optimizer = dict(type="AdamW", lr=0.006, weight_decay=0.05)
+epoch = 20
+eval_epoch = 20
+optimizer = dict(type="AdamW", lr=0.007, weight_decay=0.05)
 scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
 
 # dataset settings
@@ -36,10 +56,10 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=12,
+    num_classes=7,
     ignore_index=-1,
     names=[
-'stop-sign', 'warning-sign', 'highway-guardrails', 'transmission-tower', 'clutter', 'guide-sign', 'delineator-post', 'wires', 'regulatory-sign', 'wooden-utility-pole', 'street-lights', 'crossbuck'],
+    'solid-edge-lines', 'dash-solid-center-lines', 'lane', 'dashed-center-line', 'shoulder', 'vegetation', 'clutter'],
     train=dict(
         type=dataset_type,
         split="train",
@@ -90,7 +110,8 @@ data = dict(
             # dict(type="CenterShift", apply_z=True),
             dict(
                 type="Copy",
-                keys_dict={"coord": "origin_coord", "segment": "origin_segment"},
+                keys_dict={"coord": "origin_coord",
+                           "segment": "origin_segment"},
             ),
             # dict(
             #     type="GridSample",
@@ -114,7 +135,7 @@ data = dict(
     ),
     test=dict(
         type=dataset_type,
-        split="train",
+        split="test",
         data_root=data_root,
         transform=[dict(type="CenterShift", apply_z=True)],
         test_mode=True,
@@ -151,7 +172,8 @@ data = dict(
                     dict(type="RandomScale", scale=[0.95, 0.95]),
                     dict(type="RandomFlip", p=1),
                 ],
-                [dict(type="RandomScale", scale=[1, 1]), dict(type="RandomFlip", p=1)],
+                [dict(type="RandomScale", scale=[1, 1]),
+                 dict(type="RandomFlip", p=1)],
                 [
                     dict(type="RandomScale", scale=[1.05, 1.05]),
                     dict(type="RandomFlip", p=1),
