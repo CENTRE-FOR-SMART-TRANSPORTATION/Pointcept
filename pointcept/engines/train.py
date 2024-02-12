@@ -286,8 +286,8 @@ class Trainer(TrainerBase):
                 val_data,
                 batch_size=self.cfg.batch_size_val_per_gpu,
                 shuffle=False,
-                num_workers=self.cfg.num_worker_per_gpu,
-                pin_memory=True,
+                num_workers=0,
+                pin_memory=False,
                 sampler=val_sampler,
                 collate_fn=collate_fn,
             )
