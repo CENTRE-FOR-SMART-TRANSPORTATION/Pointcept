@@ -19,18 +19,18 @@ print(torch.backends.cudnn.is_available())
 
 torch.cuda.empty_cache()
 model_saved = torch.load(
-    '/home/gurveer/Desktop/Pointcept/exp/cstdataset/semseg-pt-v2m2-0-base-new/model/model_best.pth')
+    '/home/gurveer/Desktop/Pointcept/exp/cstdataset/semseg-pt-v2m2-0-base-multiclass/model/model_best.pth')
 single_sample = torch.load(
-    '/home/gurveer/Desktop/datasets/preprocessed_selective/test/02002N_C1R1_R1R1_18000_20321_section_2_sar_d_points_15.pth')
+    '/home/gurveer/Desktop/datasets/preprocessed_new_norm_v2/train/03702E_C1R1_R1R1_18000_20000_section_24_sar_d_points_35.pth')
 original = torch.load(
-    '/home/gurveer/Desktop/datasets/preprocessed_selective_org/train/02002N_C1R1_R1R1_18000_20321_section_2_sar_d_points_15.pth')
+    '/home/gurveer/Desktop/datasets/preprocessed_50m_nonunified_orig/train/03702E_C1R1_R1R1_18000_20000_section_24_sar_d_points_35.pth')
 folder = "/home/gurveer/Desktop/model_data/data/some_labels/las_files"
 
 colors = dict()
 colors = {0: (0, 255, 0), 1: (255, 0, 0), 2: (0, 0, 255),
-          3: (255, 255, 0), 4: (255, 0, 255), 5: (255, 255, 255), 6: (50, 50, 50)}
+          3: (255, 255, 0), 4: (255, 0, 255), 5: (255, 255, 255), 6: (255, 255, 255)}
 num_classes = 7
-class_names = ['solid-edge-lines', 'dash-solid-center-lines', 'lane', 'dashed-center-line', 'shoulder', 'vegetation', 'clutter']
+class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
 
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
@@ -175,7 +175,7 @@ for i in range(len(totals)):
 for gt, l in zip(ground_truth, labels):
     matrix[gt[0]][l] += 1
 
-print_matrix(matrix, "focal_num.xlsx")
+print_matrix(matrix, "multiclass.xlsx")
 for i in range(len(matrix)):
     for j in range(len(matrix[0])):
         matrix[i][j] /= totals[i]
@@ -184,9 +184,9 @@ for i in range(len(matrix)):
 
 print(matrix)
 print(totals)
-print_matrix(matrix, "focal_perc.xlsx")
+print_matrix(matrix, "multiclass.xlsx")
 outfile = os.path.join(
-    predictions_folder, f"section2_focal.txt")
+    predictions_folder, f"section10_non_unified_lovasz_v2.txt")
 with open(outfile, "w") as f:
     for c, l in zip(original["coord"], labels):
         f.write(

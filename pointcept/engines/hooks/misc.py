@@ -274,7 +274,7 @@ class PreciseEvaluator(HookBase):
             checkpoint = torch.load(best_path)
             state_dict = checkpoint["state_dict"]
             tester.model.load_state_dict(state_dict, strict=True)
-        print(f"test epoch in cfg is {cfg.test_epoch}")
+        # print(f"test epoch in cfg is {cfg.test_epoch}")
         tester.test()
 
 

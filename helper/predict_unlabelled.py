@@ -19,11 +19,11 @@ torch.cuda.empty_cache()
 model_saved = torch.load(
     'exp/cstdataset/semseg-pt-v2m2-0-base-multiclass/model/model_best.pth')
 
-folder = "/home/gurveer/Desktop/model_data/hesham_data/02002N_C1R1_R1R1_18000_20321_A/las_files/"
+folder = "/home/gurveer/Desktop/model_data/50m/segments/03702E_C1R1_R1R1_18000_20000/las_files/"
 
 colors = dict()
 colors = {0: (0, 255, 0), 1: (255, 0, 0), 2: (0, 0, 255),
-          3: (255, 255, 0), 4: (255, 0, 255), 5: (0, 0, 0), }
+          3: (255, 255, 0), 4: (255, 0, 255), 5: (255, 255, 255), 6: (100, 100, 100)}
 print(colors)
 
 
@@ -81,7 +81,7 @@ def voxel_downsample(points, voxel_size):
 
 
 predictions_folder = os.path.join(
-    os.path.expanduser('~'), 'Desktop', 'predictions_latest')
+    os.path.expanduser('~'), 'Desktop', 'predictions_newnorm')
 if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
@@ -89,7 +89,7 @@ for file in os.listdir(folder):
     filename = os.path.join(folder, file)
     las = laspy.read(filename)
     unlabelled_data = np.vstack((las.x, las.y, las.z, las.intensity)).T
-    unlabelled_data = voxel_downsample(unlabelled_data, 0.1)
+    unlabelled_data = voxel_downsample(unlabelled_data, 0.4)
     points_arr = np.vstack(
         (unlabelled_data[:, 0], unlabelled_data[:, 1], unlabelled_data[:, 2]))
     points = points_arr.copy()

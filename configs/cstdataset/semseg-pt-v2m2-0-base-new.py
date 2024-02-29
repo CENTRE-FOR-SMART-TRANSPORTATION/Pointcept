@@ -35,9 +35,9 @@ model = dict(
         unpool_backend="map",  # map / interp
     ),
     criteria=[
-        # dict(type="FocalLoss", gamma=2.0, alpha=0.5,
-        #      loss_weight=1.0, ignore_index=-1),
-        dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1),],
+        dict(type="FocalLoss", gamma=2.0, alpha=0.5, loss_weight=1.0, ignore_index=-1),
+                # dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1),
+        ],
 )
 
 
@@ -61,7 +61,8 @@ change the features and keys in the collect transformation
 data = dict(
     num_classes=7,
     ignore_index=-1,
-    names=['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter' ],
+    names=[
+    'solid-edge-lines', 'dash-solid-center-lines', 'lane', 'dashed-center-line', 'shoulder', 'vegetation', 'clutter'],
     train=dict(
         type=dataset_type,
         split="train",

@@ -147,7 +147,7 @@ data = dict(
                 hash_type="fnv",
                 mode="test",
                 keys=("coord", "intensity"),
-                return_discrete_coord=True,
+                return_grid_coord=True,
             ),
             crop=None,
             post_transform=[
