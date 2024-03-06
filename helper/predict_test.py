@@ -18,14 +18,6 @@ print(torch.backends.cudnn.is_available())
 
 
 torch.cuda.empty_cache()
-model_saved = torch.load(
-    '/home/gurveer/Desktop/Pointcept/exp/cstdataset/combined_config/model/model_best.pth')
-single_sample = torch.load(
-    '/home/gurveer/Desktop/datasets/preprocessed_combined/test/00248N_C1R1_38000_40000_section_10_sar__d_points_35.pth')
-original = torch.load(
-    '/home/gurveer/Desktop/datasets/preprocessed_combined/test/00248N_C1R1_38000_40000_section_10_sar__d_points_35.pth')
-folder = "/home/gurveer/Desktop/model_data/data/some_labels/las_files"
-
 colors = dict()
 colors = {
     0: [255,255,0], # yellow, solid-line
@@ -112,6 +104,9 @@ predictions_folder = os.path.join(
 if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
+model_saved = torch.load(
+    '/home/gurveer/Desktop/Pointcept/exp/cstdataset/combined_config/model/model_best.pth')
+folder = "home/gurveer/Desktop/datasets/preprocessed_combined/test"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
@@ -160,51 +155,63 @@ model.eval()
 
 dev = 'cuda'
 model = model.to(dev)
-data_dict = OrderedDict()
-data_dict["coord"] = torch.from_numpy(single_sample["coord"]).clone().to(
-    torch.float).contiguous().detach().to(dev)
-data_dict["feat"] = torch.from_numpy(np.vstack((single_sample["coord"][:, 0], single_sample["coord"][:, 1], single_sample["coord"]
-                                     [:, 2], single_sample["intensity"][:, 0])).T).clone().to(torch.float).contiguous().detach().to(dev)
-data_dict["offset"] = torch.tensor(
-    [single_sample["coord"].shape[0]],  device=dev)
-print('running')
-with torch.no_grad():
-    seg_logits = model(data_dict)['seg_logits']
-    sm = softmax(seg_logits, -1)
-
-labels = sm.max(1)[1].data.cpu().numpy()
-ground_truth = single_sample["semantic_gt"]
-
-matrix = [[0 for _ in range(num_classes)] for _ in range(num_classes)]
-totals = [0 for _ in range(num_classes)]
-for i in ground_truth:
-    totals[i[0]] += 1
-for i in range(len(totals)):
-    if totals[i] == 0:
-        totals[i] = -1
-
-for gt, l in zip(ground_truth, labels):
-    matrix[gt[0]][l] += 1
-
-print_matrix(matrix, "multiclass.xlsx")
-for i in range(len(matrix)):
-    for j in range(len(matrix[0])):
-        matrix[i][j] /= totals[i]
-        matrix[i][j] = round(matrix[i][j], 3)
 
 
-print(matrix)
-print(totals)
-print_matrix(matrix, "multiclass.xlsx")
-outfile = os.path.join(
-    predictions_folder, f"section10_combined.txt")
-with open(outfile, "w") as f:
-    for c, l in zip(original["coord"], labels):
-        f.write(
-            f"{c[0]},{c[1]},{c[2]},{colors[l][0]},{colors[l][1]},{colors[l][2]}\n")
-count = defaultdict(int)
+predictions_folder = os.path.join(
+    os.path.expanduser('~'), 'Desktop', 'predictions_test')
+if not os.path.exists(predictions_folder):
+    os.makedirs(predictions_folder)
 
-for l in labels:
-    count[l] += 1
+for file in os.listdir(folder):
+    single_sample = torch.load(os.path.join(folder, filename))
+    original = torch.load(os.path.join(folder, filename))
+    filename_cut, ext = os.path.splitext(filename)
+    filename = os.path.join(folder, file)
+    data_dict = OrderedDict()
+    data_dict["coord"] = torch.from_numpy(single_sample["coord"]).clone().to(
+        torch.float).contiguous().detach().to(dev)
+    data_dict["feat"] = torch.from_numpy(np.vstack((single_sample["coord"][:, 0], single_sample["coord"][:, 1], single_sample["coord"]
+                                        [:, 2], single_sample["intensity"][:, 0])).T).clone().to(torch.float).contiguous().detach().to(dev)
+    data_dict["offset"] = torch.tensor(
+        [single_sample["coord"].shape[0]],  device=dev)
 
-print(count)
+    with torch.no_grad():
+        seg_logits = model(data_dict)['seg_logits']
+        sm = softmax(seg_logits, -1)
+
+    labels = sm.max(1)[1].data.cpu().numpy()
+    ground_truth = single_sample["semantic_gt"]
+
+    matrix = [[0 for _ in range(num_classes)] for _ in range(num_classes)]
+    totals = [0 for _ in range(num_classes)]
+    for i in ground_truth:
+        totals[i[0]] += 1
+    for i in range(len(totals)):
+        if totals[i] == 0:
+            totals[i] = -1
+
+    for gt, l in zip(ground_truth, labels):
+        matrix[gt[0]][l] += 1
+
+    print_matrix(matrix, "multiclass.xlsx")
+    for i in range(len(matrix)):
+        for j in range(len(matrix[0])):
+            matrix[i][j] /= totals[i]
+            matrix[i][j] = round(matrix[i][j], 3)
+
+
+    print(matrix)
+    print(totals)
+    print_matrix(matrix, "multiclass.xlsx")
+    outfile = os.path.join(
+        predictions_folder, f"{filename_cut}_prediction.txt")
+    with open(outfile, "w") as f:
+        for c, l in zip(original["coord"], labels):
+            f.write(
+                f"{c[0]},{c[1]},{c[2]},{colors[l][0]},{colors[l][1]},{colors[l][2]}\n")
+    count = defaultdict(int)
+
+    for l in labels:
+        count[l] += 1
+
+    print(count)
