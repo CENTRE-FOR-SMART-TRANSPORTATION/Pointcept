@@ -10,29 +10,9 @@ enable_amp = True
 model = dict(
     type="DefaultSegmentor",
     backbone=dict(
-        type="PT-v2m2",
+        type="PointTransformer-Seg50",
         in_channels=4,
-        num_classes=9,
-        patch_embed_depth=1,
-        patch_embed_channels=48,
-        patch_embed_groups=6,
-        patch_embed_neighbours=8,
-        enc_depths=(2, 2, 6, 2),
-        enc_channels=(96, 192, 384, 512),
-        enc_groups=(12, 24, 48, 64),
-        enc_neighbours=(16, 16, 16, 16),
-        dec_depths=(1, 1, 1, 1),
-        dec_channels=(48, 96, 192, 384),
-        dec_groups=(6, 12, 24, 48),
-        dec_neighbours=(16, 16, 16, 16),
-        grid_sizes=(0.15, 0.375, 0.9375, 2.34375),  # x3, x2.5, x2.5, x2.5
-        attn_qkv_bias=True,
-        pe_multiplier=False,
-        pe_bias=True,
-        attn_drop_rate=0.0,
-        drop_path_rate=0.3,
-        enable_checkpoint=False,
-        unpool_backend="map",  # map / interp
+        num_classes=13,
     ),
     criteria=[
         # dict(type="FocalLoss", gamma=2.0, alpha=0.5,
@@ -59,9 +39,10 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=9,
+    num_classes=13,
     ignore_index=-1,
-    names=['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation'],
+    names=['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light_pole', 'vegetation', 'broken-line', 'solid-line', 
+           'traffic-cones', 'gore_area', 'highway-guardrails', 'delineator-post'],
     train=dict(
         type=dataset_type,
         split="train",

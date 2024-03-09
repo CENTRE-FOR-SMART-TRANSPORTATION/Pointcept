@@ -19,6 +19,17 @@ print(torch.backends.cudnn.is_available())
 
 torch.cuda.empty_cache()
 colors = dict()
+# colors = {
+#     0: [255,255,0], # yellow, solid-line
+#     1: [0,255,0], # green, traffic-sign
+#     2: [0,0,255], # blue, wooden-utility-pole
+#     3: [255,0,0], # red, clutter
+#     4: [255,255,255], # white, road
+#     5: [0,0,0],     # black, wires
+#     6: [0,0,128],   # light blue, delineator post
+#     7: [255,0,255], # purple, broken-line
+#     8: [0,255,255]  # cyan, vegetatoin
+# }
 colors = {
     0: [255,255,0], # yellow, solid-line
     1: [0,255,0], # green, traffic-sign
@@ -33,7 +44,7 @@ colors = {
 
 num_classes = 9
 # class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
-class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
+# class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
 
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
@@ -106,7 +117,7 @@ if not os.path.exists(predictions_folder):
 
 model_saved = torch.load(
     '/home/gurveer/Desktop/Pointcept/exp/cstdataset/combined_config/model/model_best.pth')
-folder = "home/gurveer/Desktop/datasets/preprocessed_combined/test"
+folder = "/home/gurveer/Desktop/datasets/preprocessed_combined/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
@@ -114,7 +125,7 @@ model = build_model(dict(
     backbone=dict(
         type="PT-v2m2",
         in_channels=4,
-        num_classes=9,
+        num_classes=13,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -163,9 +174,9 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 for file in os.listdir(folder):
-    single_sample = torch.load(os.path.join(folder, filename))
-    original = torch.load(os.path.join(folder, filename))
-    filename_cut, ext = os.path.splitext(filename)
+    single_sample = torch.load(os.path.join(folder, file))
+    original = torch.load(os.path.join(folder, file))
+    filename_cut, ext = os.path.splitext(file)
     filename = os.path.join(folder, file)
     data_dict = OrderedDict()
     data_dict["coord"] = torch.from_numpy(single_sample["coord"]).clone().to(

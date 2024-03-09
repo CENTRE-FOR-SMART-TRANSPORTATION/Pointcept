@@ -1,7 +1,7 @@
 import torch
 
 # Load the .pth file
-file_path = '/home/gurveer/Desktop/fresh/datasets/scannet/test/scene0758_00.pth'
+file_path = '/home/gurveer/Desktop/datasets/preprocessed_combined_new/train/00215S_L1L1_24000_22000_section_12_sar__d_points_40_sar__d_points_35.pth'
 data = torch.load(file_path)
 
 # Print the keys in the loaded data
