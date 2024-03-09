@@ -31,21 +31,26 @@ colors = dict()
 #     8: [0,255,255]  # cyan, vegetatoin
 # }
 colors = {
-    0: [255,255,0], # yellow, solid-line
-    1: [0,255,0], # green, traffic-sign
-    2: [0,0,255], # blue, wooden-utility-pole
+    0: [255,255,0], # yellow, concrete-barriers
+    1: [0,255,0], # green, wires
+    2: [0,0,255], # blue, traffic-sign
     3: [255,0,0], # red, clutter
-    4: [255,255,255], # white, road
-    5: [0,0,0],     # black, wires
-    6: [0,0,128],   # light blue, delineator post
+    4: [255,255,255], # white, pavement
+    5: [0,0,0],     # black, light-pole
+    6: [0,0,128],   # light blue, vegetation
     7: [255,0,255], # purple, broken-line
-    8: [0,255,255]  # cyan, vegetatoin
+    8: [0,255,255],  # cyan, solid-line
+    9: [128,0,128],  # dark purple, traffic-cones
+    10: [128,128,0], # olive, gore-area
+    11: [255,165,0], # orange, highway-guardrails
+    12: [128,128,128] # gray, delineator-post
 }
 
 num_classes = 9
 # class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
 # class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
-
+class_names = ['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line', 'solid-line', 
+           'traffic-cones', 'gore-area', 'highway-guardrails', 'delineator-post']
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
     data = [[class_names[i], *matrix[i]] for i in range(len(matrix))]

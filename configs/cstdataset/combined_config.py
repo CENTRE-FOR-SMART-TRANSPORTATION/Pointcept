@@ -41,8 +41,8 @@ change the features and keys in the collect transformation
 data = dict(
     num_classes=13,
     ignore_index=-1,
-    names=['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light_pole', 'vegetation', 'broken-line', 'solid-line', 
-           'traffic-cones', 'gore_area', 'highway-guardrails', 'delineator-post'],
+    names=['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line', 'solid-line', 
+           'traffic-cones', 'gore-area', 'highway-guardrails', 'delineator-post'],
     train=dict(
         type=dataset_type,
         split="train",
