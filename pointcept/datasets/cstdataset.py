@@ -89,6 +89,13 @@ class CSTDataset(Dataset):
         # )
         coord = np.asarray(data["coord"])
         intensity = np.asarray(data["intensity"])
+        try:
+            roughness = np.asarray(data["roughness"])
+            density = np.asarray(data["density"])  
+            z_gradient = np.asarray(data["z_gradient"])    
+        except KeyError:
+            print("No extra features found")   
+
         scene_id = data_path
         if "semantic_gt" in data.keys():
             segment = np.asarray(data["semantic_gt"].reshape([-1]))
@@ -102,6 +109,9 @@ class CSTDataset(Dataset):
             # name=name,
             coord=coord,
             intensity=intensity,
+            roughness=roughness,
+            density=density,
+            z_gradient=z_gradient,
             segment=segment,
             instance=instance,
             scene_id=scene_id,
