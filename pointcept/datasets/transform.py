@@ -38,16 +38,16 @@ class Collect(object):
     def __call__(self, data_dict):
         # print("collecting...")
         data = dict()
-        print("Collecting")
+        # print("Collecting")
         if isinstance(self.keys, str):
             self.keys = [self.keys]
-        print(self.keys)
+        # print(self.keys)
         for key in self.keys:
             data[key] = data_dict[key]
         for key, value in self.offset_keys.items():
             data[key] = torch.tensor([data_dict[value].shape[0]])
-        print(self.kwargs.items())
-        print(data_dict.keys())
+        # print(self.kwargs.items())
+        # print(data_dict.keys())
         for name, keys in self.kwargs.items():
             name = name.replace("_keys", "")
             assert isinstance(keys, Sequence)
