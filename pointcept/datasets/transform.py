@@ -38,8 +38,10 @@ class Collect(object):
     def __call__(self, data_dict):
         # print("collecting...")
         data = dict()
+        print("Collecting")
         if isinstance(self.keys, str):
             self.keys = [self.keys]
+        print(self.keys)
         for key in self.keys:
             data[key] = data_dict[key]
         for key, value in self.offset_keys.items():
