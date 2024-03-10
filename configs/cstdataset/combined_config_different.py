@@ -12,7 +12,7 @@ model = dict(
     backbone=dict(
         type="PT-v2m2",
         in_channels=4,
-        num_classes=13,
+        num_classes=10,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -59,10 +59,9 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=13,
+    num_classes=10,
     ignore_index=-1,
-    names=['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line', 'solid-line', 
-           'traffic-cones', 'gore-area', 'highway-guardrails', 'delineator-post'],
+    names=['solid-edge-line', 'dashed-lane-line', 'gore-area', 'vegetation', 'shoulder', 'clutter', 'traffic-sign', 'light-pole', 'concrete-barriers', 'lane'],
     train=dict(
         type=dataset_type,
         split="train",
