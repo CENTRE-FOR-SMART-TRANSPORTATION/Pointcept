@@ -1,7 +1,7 @@
 import torch
 import os
 # Load the .pth file
-file_path = os.path.join(os.path.expanduser('~'), "Desktop", "datasets", "preprocessed_features", "00215S_L1L1_24000_22000_section_21_sar__d_points_40_sar__d_points_35.pth")
+file_path = os.path.join(os.path.expanduser('~'), "Desktop", "datasets", "preprocessed_features", "train", "00215S_L1L1_24000_22000_section_21_sar__d_points_40_sar__d_points_35.pth")
 data = torch.load(file_path)
 
 # Print the keys in the loaded data
