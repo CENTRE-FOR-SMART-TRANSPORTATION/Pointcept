@@ -158,7 +158,7 @@ data = dict(
                 dict(
                     type="Collect",
                     keys=("coord", "index"),
-                    feat_keys=("coord", "intensity"),
+                    feat_keys=("coord", "intensity",  "roughness", "density", "z_gradient"),
                 ),
             ],
             aug_transform=[
