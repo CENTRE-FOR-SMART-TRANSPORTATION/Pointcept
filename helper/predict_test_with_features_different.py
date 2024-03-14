@@ -117,8 +117,8 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/helmasry/Desktop/saved/exp_unified_1_features_different/cstdataset/combined_config_features_different/model/model_best.pth')
-folder = "/home/helmasry/Desktop/datasets/preprocessed_unified_1_different/test/"
+    '/home/helmasry/Desktop/saved/exp_unified_different_ig/cstdataset/combined_config_features_different/model/model_best.pth')
+folder = "/home/helmasry/Desktop/datasets/preprocessed_unified_different_ig/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
