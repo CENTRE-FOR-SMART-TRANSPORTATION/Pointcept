@@ -186,6 +186,7 @@ for file in os.listdir(folder):
                                         [:, 2], single_sample["intensity"][:, 0], 
                                         single_sample["roughness"][:, 0],
                                         single_sample["density"][:, 0],
+                                        single_sample["intensity_gradient"][:, 0],
                                         single_sample["z_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
                                         
     data_dict["offset"] = torch.tensor(
