@@ -11,7 +11,7 @@ model = dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=7,
+        in_channels=8,
         num_classes=10,
         patch_embed_depth=1,
         patch_embed_channels=48,
@@ -99,7 +99,7 @@ data = dict(
             dict(
                 type="Collect",
                 keys=("coord", "segment"),
-                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient"],
+                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient", "intensity_gradient"],
             ),
         ],
         test_mode=False,
@@ -130,7 +130,7 @@ data = dict(
                 type="Collect",
                 keys=("coord", "segment"),
                 offset_keys_dict=dict(offset="coord"),
-                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient"],
+                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient", "intensity_gradient"],
             ),
         ],
         test_mode=False,
@@ -157,7 +157,7 @@ data = dict(
                 dict(
                     type="Collect",
                     keys=("coord", "index"),
-                    feat_keys=("coord", "intensity",  "roughness", "density", "z_gradient"),
+                    feat_keys=("coord", "intensity",  "roughness", "density", "z_gradient", "intensity_gradient"),
                 ),
             ],
             aug_transform=[

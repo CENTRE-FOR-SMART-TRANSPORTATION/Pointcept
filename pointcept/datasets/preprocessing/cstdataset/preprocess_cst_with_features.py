@@ -54,11 +54,11 @@ def parse_room(
             intensity = obj[:, 3]
             intensity = intensity.reshape([-1, 1])
             roughness = obj[:, 4]
-            roughness = intensity.reshape([-1, 1])
+            roughness = roughness.reshape([-1, 1])
             density = obj[:, 5]
-            density = intensity.reshape([-1, 1])
+            density = density.reshape([-1, 1])
             z_gradient = obj[:, 6]
-            z_gradient = intensity.reshape([-1, 1])
+            z_gradient = z_gradient.reshape([-1, 1])
         except IndexError:
             try:
                 obj = obj.reshape([-1, 4])
