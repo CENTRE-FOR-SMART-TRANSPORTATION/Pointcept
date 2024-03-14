@@ -92,7 +92,8 @@ class CSTDataset(Dataset):
         try:
             roughness = np.asarray(data["roughness"])
             density = np.asarray(data["density"])  
-            z_gradient = np.asarray(data["z_gradient"])    
+            z_gradient = np.asarray(data["z_gradient"]) 
+            intensity_gradient = np.asarray(data["intensity_gradient"])   
         except KeyError:
             print("No extra features found")   
 
@@ -112,6 +113,7 @@ class CSTDataset(Dataset):
             roughness=roughness,
             density=density,
             z_gradient=z_gradient,
+            intensity_gradient=intensity_gradient,
             segment=segment,
             instance=instance,
             scene_id=scene_id,
