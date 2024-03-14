@@ -58,7 +58,7 @@ def parse_room(
             density = obj[:, 5]
             density = density.reshape([-1, 1])
             z_gradient = obj[:, 6]
-            z_gradient = roughness.reshape([-1, 1])
+            z_gradient = z_gradient.reshape([-1, 1])
             intensity_gradient = obj[:, 7]
             intensity_gradient = intensity_gradient.reshape([-1, 1])     
         except IndexError:
@@ -90,6 +90,7 @@ def parse_room(
         room_roughness.append(roughness)
         room_density.append(density)
         room_z_gradient.append(z_gradient)
+        room_intensity_gradient.append(intensity_gradient)
         room_semantic_gt.append(semantic_gt)
         room_instance_gt.append(instance_gt)
 
@@ -99,6 +100,7 @@ def parse_room(
     room_roughness = np.ascontiguousarray(np.vstack(room_roughness))
     room_density = np.ascontiguousarray(np.vstack(room_density))
     room_z_gradient = np.ascontiguousarray(np.vstack(room_z_gradient))
+    room_intensity_gradient = np.ascontiguousarray(np.vstack(room_intensity_gradient))
     room_semantic_gt = np.ascontiguousarray(np.vstack(room_semantic_gt))
     room_instance_gt = np.ascontiguousarray(np.vstack(room_instance_gt))
 
@@ -108,6 +110,7 @@ def parse_room(
         roughness=room_roughness,
         density=room_density,
         z_gradient=room_z_gradient,
+        intensity_gradient=room_intensity_gradient,
         semantic_gt=room_semantic_gt,
         instance_gt=room_instance_gt,
     )
