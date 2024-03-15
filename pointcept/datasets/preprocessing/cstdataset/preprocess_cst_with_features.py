@@ -1,5 +1,3 @@
-
-
 """
 Preprocessing Script for S3DIS
 Parsing normal vectors has a large consumption of memory. Please reduce max_workers if memory is limited.
@@ -30,6 +28,7 @@ def parse_room(
 
 
     class2label = {cls: i for i, cls in enumerate(classes)}
+
     # class2label['clutter'] = -1
     source_dir = os.path.join(dataset_root, room)
     save_path = os.path.join(output_root, room) + ".pth"
