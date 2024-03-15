@@ -129,7 +129,7 @@ model = build_model(dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=7,
+        in_channels=8,
         num_classes=13,
         patch_embed_depth=1,
         patch_embed_channels=48,
@@ -190,7 +190,8 @@ for file in os.listdir(folder):
                                         [:, 2], single_sample["intensity"][:, 0], 
                                         single_sample["roughness"][:, 0],
                                         single_sample["density"][:, 0],
-                                        single_sample["z_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
+                                        single_sample["z_gradient"][:, 0],
+                                        single_sample["intensity_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
                                         
     data_dict["offset"] = torch.tensor(
         [single_sample["coord"].shape[0]],  device=dev)
