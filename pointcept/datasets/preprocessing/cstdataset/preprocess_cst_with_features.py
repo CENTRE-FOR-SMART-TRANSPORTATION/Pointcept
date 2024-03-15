@@ -104,7 +104,7 @@ def parse_room(
         room_semantic_gt = np.ascontiguousarray(np.vstack(room_semantic_gt))
         room_instance_gt = np.ascontiguousarray(np.vstack(room_instance_gt))
     except ValueError:
-        print("#################### error", object_path)
+        print("#################### error", save_path)
 
     save_dict = dict(
         coord=room_coords,
