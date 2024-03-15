@@ -94,15 +94,17 @@ def parse_room(
         room_semantic_gt.append(semantic_gt)
         room_instance_gt.append(instance_gt)
 
-
-    room_coords = np.ascontiguousarray(np.vstack(room_coords))
-    room_intensity = np.ascontiguousarray(np.vstack(room_intensity))
-    room_roughness = np.ascontiguousarray(np.vstack(room_roughness))
-    room_density = np.ascontiguousarray(np.vstack(room_density))
-    room_z_gradient = np.ascontiguousarray(np.vstack(room_z_gradient))
-    room_intensity_gradient = np.ascontiguousarray(np.vstack(room_intensity_gradient))
-    room_semantic_gt = np.ascontiguousarray(np.vstack(room_semantic_gt))
-    room_instance_gt = np.ascontiguousarray(np.vstack(room_instance_gt))
+    try:
+        room_coords = np.ascontiguousarray(np.vstack(room_coords))
+        room_intensity = np.ascontiguousarray(np.vstack(room_intensity))
+        room_roughness = np.ascontiguousarray(np.vstack(room_roughness))
+        room_density = np.ascontiguousarray(np.vstack(room_density))
+        room_z_gradient = np.ascontiguousarray(np.vstack(room_z_gradient))
+        room_intensity_gradient = np.ascontiguousarray(np.vstack(room_intensity_gradient))
+        room_semantic_gt = np.ascontiguousarray(np.vstack(room_semantic_gt))
+        room_instance_gt = np.ascontiguousarray(np.vstack(room_instance_gt))
+    except ValueError:
+        print("#################### error", object_path)
 
     save_dict = dict(
         coord=room_coords,
