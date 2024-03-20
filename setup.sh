@@ -29,3 +29,19 @@ cd ../..
 
 # Open3D (visualization, optional)
 pip install open3d
+
+conda install -c bioconda google-sparsehash 
+cd libs/pointgroup_ops
+python setup.py install --include_dirs=${CONDA_PREFIX}/include
+cd ../..
+
+pip install ocnn
+###
+# may need to do the following when there are errors
+# 
+#
+# ninja build error for libs/pointops
+# sudo apt install ninja-build
+#
+# then delete the build folder in libs/pointops and try again
+###
