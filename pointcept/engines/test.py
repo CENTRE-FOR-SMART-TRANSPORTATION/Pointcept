@@ -162,6 +162,7 @@ class SemSegTester(TesterBase):
             data_dict = data_dict[0]  # current assume batch size is 1
             fragment_list = data_dict.pop("fragment_list")
             segment = data_dict.pop("segment")
+            ground_truth = segment
             data_name = data_dict.pop("name")
             pred_save_path = os.path.join(save_path, "{}_pred.npy".format(data_name))
             if os.path.isfile(pred_save_path):
@@ -255,7 +256,6 @@ class SemSegTester(TesterBase):
                     print(table)
 
                 labels = pred
-                ground_truth = segment
 
                 matrix = [[0 for _ in range(num_classes)] for _ in range(num_classes)]
                 totals = [0 for _ in range(num_classes)]
