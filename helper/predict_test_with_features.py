@@ -162,7 +162,7 @@ model = build_model(dict(
 #     new_state_dict[new_k] = state_dict[k]
 
 
-model.load_state_dict(state_dict)
+model.load_state_dict(state_dict, strict=True)
 
 model.eval()
 

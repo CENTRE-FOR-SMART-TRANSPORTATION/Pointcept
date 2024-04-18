@@ -162,6 +162,7 @@ class SemSegTester(TesterBase):
             data_dict = data_dict[0]  # current assume batch size is 1
             fragment_list = data_dict.pop("fragment_list")
             segment = data_dict.pop("segment")
+            ground_truth = segment
             data_name = data_dict.pop("name")
             pred_save_path = os.path.join(save_path, "{}_pred.npy".format(data_name))
             if os.path.isfile(pred_save_path):
@@ -172,6 +173,8 @@ class SemSegTester(TesterBase):
                 )
                 pred = np.load(pred_save_path)
             else:
+                print(fragment_list, len(fragment_list))
+                print(segment, len(segment))
                 pred = torch.zeros((segment.size, self.cfg.data.num_classes)).cuda()
                 for i in range(len(fragment_list)):
                     fragment_batch_size = 1
@@ -255,7 +258,6 @@ class SemSegTester(TesterBase):
                     print(table)
 
                 labels = pred
-                ground_truth = segment
 
                 matrix = [[0 for _ in range(num_classes)] for _ in range(num_classes)]
                 totals = [0 for _ in range(num_classes)]
