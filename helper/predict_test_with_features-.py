@@ -118,15 +118,15 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/helmasry/Desktop/saved/exp_Trail_Wade_new/cstdataset/combined_config_features/model/model_best.pth')
-folder = "/home/helmasry/Desktop/datasets/preprocessed_test_Wade/test/"
+    '/home/helmasry/Desktop/saved/exp_Trail_Wade1/cstdataset/combined_config_features/model/model_best.pth')
+folder = "/home/helmasry/Desktop/datasets/preprocessed_Trail_Wade1/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=8,
+        in_channels=7,
         num_classes=10,
         patch_embed_depth=1,
         patch_embed_channels=48,
@@ -187,8 +187,7 @@ for file in os.listdir(folder):
                                         [:, 2], single_sample["intensity"][:, 0], 
                                         single_sample["roughness"][:, 0],
                                         single_sample["density"][:, 0],
-                                        single_sample["z_gradient"][:, 0],
-                                        single_sample["intensity_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
+                                        single_sample["z_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
                                         
     data_dict["offset"] = torch.tensor(
         [single_sample["coord"].shape[0]],  device=dev)

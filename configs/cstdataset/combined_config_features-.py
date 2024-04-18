@@ -11,7 +11,7 @@ model = dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=8,
+        in_channels=7,
         num_classes=10,
         patch_embed_depth=1,
         patch_embed_channels=48,
@@ -37,9 +37,10 @@ model = dict(
     criteria=[
         # dict(type="FocalLoss", gamma=2.0, alpha=0.5,
         #      loss_weight=1.0, ignore_index=-1),
-        # dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1),
-        dict(type="CrossEntropyLoss", 
-        weight=[51.42146564959911, 78.5283039934497, 18.47534696379318, 1.6528797238799071, 282.6492967180174, 3.8920417024824485, 260.1056459566075, 109.34789593698176, 38.98773074151407, 104.42329011184796],
+        #dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1),
+                dict(type="CrossEntropyLoss", 
+        weight=[39.12329296451628, 72.33906073015596, 21.9945055818414, 1.5297770512271045, 316.40068597560975, 4.618433115123249, 241.8818902225848, 111.65981655324529, 51.24467021368524, 109.03204370551309]
+,
         loss_weight=1.0, ignore_index=-1)],
 )
 
@@ -102,7 +103,7 @@ data = dict(
             dict(
                 type="Collect",
                 keys=("coord", "segment"),
-                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient", "intensity_gradient"],
+                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient"],
             ),
         ],
         test_mode=False,
@@ -133,7 +134,7 @@ data = dict(
                 type="Collect",
                 keys=("coord", "segment"),
                 offset_keys_dict=dict(offset="coord"),
-                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient", "intensity_gradient"],
+                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient"],
             ),
         ],
         test_mode=False,
@@ -159,7 +160,7 @@ data = dict(
                 dict(
                     type="Collect",
                     keys=("coord", "index"),
-                    feat_keys=("coord", "intensity",  "roughness", "density", "z_gradient", "intensity_gradient"),
+                    feat_keys=("coord", "intensity",  "roughness", "density", "z_gradient"),
                 ),
             ],
             aug_transform=[

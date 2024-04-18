@@ -25,7 +25,7 @@ def parse_room(
     room, dataset_root, output_root
 ):
     print("Parsing: {}".format(room))
-    classes = ['solid-edge-line', 'dashed-lane-line', 'gore-area', 'vegetation', 'shoulder', 'clutter', 'traffic-sign', 'light-pole', 'concrete-barriers', 'lane']
+    classes = ['traffic-sign', 'clutter', 'solid-edge-line', 'shoulder', 'guardrails-cable-barriers', 'lane', 'vegetation', 'gore-area', 'concrete-barriers', 'dashed-lane-line', 'light-pole']
 
 
     class2label = {cls: i for i, cls in enumerate(classes)}
@@ -63,7 +63,7 @@ def parse_room(
             intensity_gradient = intensity_gradient.reshape([-1, 1])     
         except IndexError:
             try:
-                obj = obj.reshape([-1, 4])
+                obj = obj.reshape([-1, 8])
                 coords = obj[:, :3]
                 intensity = obj[:, 3]
                 intensity = intensity.reshape([-1, 1])
@@ -75,7 +75,8 @@ def parse_room(
                 z_gradient = z_gradient.reshape([-1, 1])
                 intensity_gradient = obj[:, 7]
                 intensity_gradient = intensity_gradient.reshape([-1, 1])   
-            except Exception:
+            except Exception as e:
+                print(e)
                 print("#################### error", object_path)
                 continue
         class_name = object_name if object_name in classes else "clutter"

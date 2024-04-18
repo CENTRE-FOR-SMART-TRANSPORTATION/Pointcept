@@ -31,22 +31,23 @@ colors = dict()
 #     8: [0,255,255]  # cyan, vegetatoin
 # }
 colors = {
-    0: [255,255,0], # yellow, solid-edge-line
-    1: [0,255,0], # green, dashed-lane-line
-    2: [0,0,255], # blue, gore-area
-    3: [255,0,0], # red, vegetation
-    4: [255,255,255], # white, shoulder
-    5: [0,0,0],     # black, clutter
-    6: [0,0,128],   # light blue, traffic-sign
-    7: [255,0,255], # purple, light-pole
+    0: [255,255,0], # yellow, traffic-sign
+    1: [0,255,0], # green,  clutter
+    2: [0,0,255], # blue,  solid-edge-line
+    3: [255,0,0], # red, shoulder
+    4: [255,255,255], # white, guardrails-cable-barriers
+    5: [0,0,0],     # black, lane
+    6: [255,165,0],   # orange, vegetation
+    7: [255,0,255], # purple, gore-area
     8: [0,255,255],  # cyan, concrete-barriers
-    9: [128,0,128],  # dark purple, lane
+    9: [128,0,128],  # dark purple,  dashed-lane-line
+    10: [255, 182, 193], # light pink, light-pole
 }
 
-num_classes = 10
+num_classes = 11
 # class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
 # class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
-class_names = ['solid-edge-line', 'dashed-lane-line', 'gore-area', 'vegetation', 'shoulder', 'clutter', 'traffic-sign', 'light-pole', 'concrete-barriers', 'lane']
+class_names = ['traffic-sign', 'clutter', 'solid-edge-line', 'shoulder', 'guardrails-cable-barriers', 'lane', 'vegetation', 'gore-area', 'concrete-barriers', 'dashed-lane-line', 'light-pole']
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
     data = [[class_names[i], *matrix[i]] for i in range(len(matrix))]
@@ -117,8 +118,8 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/helmasry/Desktop/saved/exp_unified_different_ig/cstdataset/combined_config_features_different/model/model_best.pth')
-folder = "/home/helmasry/Desktop/datasets/preprocessed_unified_different_ig/test/"
+    '/home/helmasry/Desktop/saved/exp_trial_9/cstdataset/combined_config_features_different/model/model_best.pth')
+folder = "/home/helmasry/Desktop/datasets/preprocessed_trial_8/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
@@ -126,7 +127,7 @@ model = build_model(dict(
     backbone=dict(
         type="PT-v2m2",
         in_channels=8,
-        num_classes=10,
+        num_classes=11,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -148,8 +149,13 @@ model = build_model(dict(
         enable_checkpoint=False,
         unpool_backend="map",  # map / interp
     ),
-    criteria=[dict(type="FocalLoss", gamma=2.0, alpha=0.5,
-                   loss_weight=1.0, ignore_index=-1)],
+ criteria=[
+        #dict(type="FocalLoss", gamma=2.0, alpha=0.5,
+        #      loss_weight=1.0, ignore_index=-1)],
+        #dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1)],
+        dict(type="CrossEntropyLoss", 
+        weight=[70.59695532148696, 87.05277943023333, 103.68207045857115, 9.153610647762024, 462.8436127218415, 1.7361371644610484, 4.8608175414703645, 33.86181673265799, 28.37766238243501, 258.3661598822952, 340.5356173238526],
+        loss_weight=1.0, ignore_index=-1)]
 ))
 
 

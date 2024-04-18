@@ -11,8 +11,8 @@ model = dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=8,
-        num_classes=10,
+        in_channels=8, #number of features (x,y,z,i,roughness,grad z, grad i, density)
+        num_classes=11,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -37,14 +37,18 @@ model = dict(
     criteria=[
         # dict(type="FocalLoss", gamma=2.0, alpha=0.5,
         #      loss_weight=1.0, ignore_index=-1),
-        dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1),],
+        # dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1),],
+        dict(type="CrossEntropyLoss", 
+        weight=[70.59695532148696, 87.05277943023333, 103.68207045857115, 9.153610647762024, 462.8436127218415, 1.7361371644610484, 4.8608175414703645, 33.86181673265799, 28.37766238243501, 258.3661598822952, 340.5356173238526]
+,
+        loss_weight=1.0, ignore_index=-1)],
 )
 
 
 # scheduler settings
-epoch = 100
-eval_epoch = 100
-optimizer = dict(type="AdamW", lr=0.007, weight_decay=0.05)
+epoch = 250
+eval_epoch = 250
+optimizer = dict(type="AdamW", lr=0.001, weight_decay=0.05)
 scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
 
 # dataset settings
@@ -59,9 +63,11 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=10,
+    num_classes=11,
     ignore_index=-1,
-    names=['solid-edge-line', 'dashed-lane-line', 'gore-area', 'vegetation', 'shoulder', 'clutter', 'traffic-sign', 'light-pole', 'concrete-barriers', 'lane'],
+    names=['traffic-sign', 'clutter', 'solid-edge-line', 'shoulder', 'guardrails-cable-barriers', 'lane', 'vegetation', 'gore-area', 'concrete-barriers', 'dashed-lane-line', 'light-pole']
+
+,
     train=dict(
         type=dataset_type,
         split="train",
@@ -152,7 +158,6 @@ data = dict(
             ),
             crop=None,
             post_transform=[
-                dict(type="CenterShift", apply_z=False),
                 dict(type="ToTensor"),
                 dict(
                     type="Collect",

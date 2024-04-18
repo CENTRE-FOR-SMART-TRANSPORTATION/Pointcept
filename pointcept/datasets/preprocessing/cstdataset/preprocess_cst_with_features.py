@@ -23,8 +23,8 @@ def parse_room(
     room, dataset_root, output_root
 ):
     print("Parsing: {}".format(room))
-    classes = ['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line',
-                'solid-line', 'traffic-cones', 'gore-area', 'highway-guardrails', 'delineator-post']
+    classes = ['concrete-barriers', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line',
+                'solid-line', 'gore-area', 'highway-guardrails']
 
 
     class2label = {cls: i for i, cls in enumerate(classes)}

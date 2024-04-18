@@ -31,23 +31,22 @@ colors = dict()
 #     8: [0,255,255]  # cyan, vegetatoin
 # }
 colors = {
-    0: [255,255,0], # yellow, concrete-barriers
-    1: [0,0,255], # blue, traffic-sign
-    2: [0,0,0], # black, clutter
-    3: [255,255,255], # white, pavement
-    4: [255,0,255], # purple, light-pole
-    5: [255,0,0], # red, vegetation
-    6: [0,255,0], # green, broken-line
-    7: [0,255,255],  # cyan, solid-line
-    8: [128,128,0], # olive, gore-area
-    9: [255,165,0], # orange, highway-guardrails
-
+    0: [255,255,0], # yellow, solid-edge-line
+    1: [0,255,0], # green, dashed-lane-line
+    2: [0,0,255], # blue, gore-area
+    3: [255,0,0], # red, vegetation
+    4: [255,255,255], # white, shoulder
+    5: [0,0,0],     # black, clutter
+    6: [255,165,0],   # orange, traffic-sign
+    7: [255,0,255], # purple, light-pole
+    8: [0,255,255],  # cyan, concrete-barriers
+    9: [128,0,128],  # dark purple, lane
 }
 
 num_classes = 10
 # class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
 # class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
-class_names = ['concrete-barriers', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line', 'solid-line', 'gore-area', 'highway-guardrails']
+class_names = ['solid-edge-line', 'dashed-lane-line', 'gore-area', 'vegetation', 'shoulder', 'clutter', 'traffic-sign', 'light-pole', 'concrete-barriers', 'lane']
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
     data = [[class_names[i], *matrix[i]] for i in range(len(matrix))]
@@ -118,15 +117,15 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/helmasry/Desktop/saved/exp_Trail_Wade_new/cstdataset/combined_config_features/model/model_best.pth')
-folder = "/home/helmasry/Desktop/datasets/preprocessed_test_Wade/test/"
+    '/home/helmasry/Desktop/saved/exp_TRIAL04/cstdataset/combined_config_features_different/model/model_best.pth')
+folder = "/home/helmasry/Desktop/datasets/preprocessed_TRIAL03/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=8,
+        in_channels=7,
         num_classes=10,
         patch_embed_depth=1,
         patch_embed_channels=48,
@@ -187,8 +186,7 @@ for file in os.listdir(folder):
                                         [:, 2], single_sample["intensity"][:, 0], 
                                         single_sample["roughness"][:, 0],
                                         single_sample["density"][:, 0],
-                                        single_sample["z_gradient"][:, 0],
-                                        single_sample["intensity_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
+                                        single_sample["z_gradient"][:, 0])).T).clone().to(torch.float).contiguous().detach().to(dev)
                                         
     data_dict["offset"] = torch.tensor(
         [single_sample["coord"].shape[0]],  device=dev)
