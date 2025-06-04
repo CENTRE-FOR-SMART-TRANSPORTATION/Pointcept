@@ -1,0 +1,9 @@
+sections/
+data/
+parsed/
+venv/
+*.txt
+*.laz
+*.las
+**/.DS_Store
+*.xyz
