@@ -1,5 +1,4 @@
 
-
 """
 Preprocessing Script for S3DIS
 Parsing normal vectors has a large consumption of memory. Please reduce max_workers if memory is limited.
@@ -25,8 +24,7 @@ def parse_room(
     room, dataset_root, output_root
 ):
     print("Parsing: {}".format(room))
-    classes = ['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line',
-                'solid-line', 'traffic-cones', 'gore-area', 'highway-guardrails', 'delineator-post']
+    classes = ['pavement', 'marking', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
 
 
     class2label = {cls: i for i, cls in enumerate(classes)}

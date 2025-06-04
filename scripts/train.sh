@@ -12,9 +12,10 @@ EXP_NAME=debug
 WEIGHT="None"
 RESUME=false
 GPU=None
+SEED=0
 
 
-while getopts "p:d:c:n:w:g:r:" opt; do
+while getopts "p:d:c:n:w:g:r:s:" opt; do
   case $opt in
     p)
       PYTHON=$OPTARG
@@ -37,6 +38,9 @@ while getopts "p:d:c:n:w:g:r:" opt; do
     g)
       GPU=$OPTARG
       ;;
+    s)
+      SEED=$OPTARG
+      ;;
     \?)
       echo "Invalid option: -$OPTARG"
       ;;
@@ -53,6 +57,7 @@ echo "Python interpreter dir: $PYTHON"
 echo "Dataset: $DATASET"
 echo "Config: $CONFIG"
 echo "GPU Num: $GPU"
+echo "Seed: $SEED"
 
 EXP_DIR=exp/${DATASET}/${EXP_NAME}
 MODEL_DIR=${EXP_DIR}/model
@@ -83,10 +88,10 @@ then
     $PYTHON "$CODE_DIR"/tools/$TRAIN_CODE \
     --config-file "$CONFIG_DIR" \
     --num-gpus "$GPU" \
-    --options save_path="$EXP_DIR"
+    --options save_path="$EXP_DIR" seed=$SEED
 else
     $PYTHON "$CODE_DIR"/tools/$TRAIN_CODE \
     --config-file "$CONFIG_DIR" \
     --num-gpus "$GPU" \
-    --options save_path="$EXP_DIR" resume="$RESUME" weight="$WEIGHT"
+    --options save_path="$EXP_DIR" resume="$RESUME" weight="$WEIGHT" seed=$SEED
 fi

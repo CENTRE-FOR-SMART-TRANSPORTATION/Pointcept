@@ -1,3 +1,5 @@
+
+
 """
 Preprocessing Script for S3DIS
 Parsing normal vectors has a large consumption of memory. Please reduce max_workers if memory is limited.
@@ -23,7 +25,8 @@ def parse_room(
     room, dataset_root, output_root
 ):
     print("Parsing: {}".format(room))
-    classes = ['pavement', 'marking', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
+    classes = ['lane', 'shoulder', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
+
 
     class2label = {cls: i for i, cls in enumerate(classes)}
     # class2label['clutter'] = -1
@@ -47,8 +50,14 @@ def parse_room(
             intensity = obj[:, 3]
             intensity = intensity.reshape([-1, 1])
         except IndexError:
-            print("#################### error", object_path)
-            continue
+            try:
+                obj = obj.reshape([-1, 4])
+                coords = obj[:, :3]
+                intensity = obj[:, 3]
+                intensity = intensity.reshape([-1, 1])
+            except Exception:
+                print("#################### error", object_path)
+                continue
         class_name = object_name if object_name in classes else "clutter"
         semantic_gt = np.repeat(class2label[class_name], coords.shape[0])
         semantic_gt = semantic_gt.reshape([-1, 1])

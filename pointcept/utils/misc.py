@@ -43,6 +43,10 @@ def intersection_and_union(output, target, K, ignore_index=-1):
     target = target.reshape(target.size)
     output[np.where(target == ignore_index)[0]] = ignore_index
     intersection = output[np.where(output == target)[0]]
+    '''
+    print("intersection", intersection, intersection.shape)
+    print("output", output, output.shape)
+    '''
     area_intersection, _ = np.histogram(intersection, bins=np.arange(K + 1))
     area_output, _ = np.histogram(output, bins=np.arange(K + 1))
     area_target, _ = np.histogram(target, bins=np.arange(K + 1))
@@ -58,10 +62,17 @@ def intersection_and_union_gpu(output, target, k, ignore_index=-1):
     target = target.view(-1)
     output[target == ignore_index] = ignore_index
     intersection = output[output == target]
+    '''
+    print("intersection", intersection, intersection.shape)
+    print("output", output, output.shape)
+    print(intersection.shape[0]/output.shape[0])
+    print(set([x.item() for x in intersection]), set([x.item() for x in output]))
+    '''
     area_intersection = torch.histc(intersection, bins=k, min=0, max=k - 1)
     area_output = torch.histc(output, bins=k, min=0, max=k - 1)
     area_target = torch.histc(target, bins=k, min=0, max=k - 1)
     area_union = area_output + area_target - area_intersection
+    #print(area_intersection)
     return area_intersection, area_union, area_target
 
 

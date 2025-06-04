@@ -20,15 +20,18 @@ print(torch.backends.cudnn.is_available())
 torch.cuda.empty_cache()
 colors = dict()
 # colors = {
-#     0: [255,255,0], # yellow, solid-line
-#     1: [0,255,0], # green, traffic-sign
-#     2: [0,0,255], # blue, wooden-utility-pole
-#     3: [255,0,0], # red, clutter
-#     4: [255,255,255], # white, road
-#     5: [0,0,0],     # black, wires
-#     6: [0,0,128],   # light blue, delineator post
-#     7: [255,0,255], # purple, broken-line
-#     8: [0,255,255]  # cyan, vegetatoin
+#    0: [0, 0, 255],      # blue, lane
+#    1: [255, 255, 0],    # yellow, shoulder
+#    2: [128, 128, 0],    # olive, chevrons
+#    3: [255, 0, 255],    # purple, broken-line
+#    4: [0, 255, 255],    # cyan, solid-line
+#    5: [255, 165, 0],    # orange, arrows
+#    6: [0, 128, 0],      # green, vegetation
+#    7: [255, 0, 0],      # red, traffic-sign
+#    8: [128, 0, 128],    # magenta, highway-guardrails
+#    9: [255, 255, 255],  # white, concrete-barriers
+#    10: [0, 0, 0],       # black, light-pole
+#    11: [192, 192, 192]  # silver, clutter
 # }
 colors = {
     0: [255, 255, 255],  # white, pavement
@@ -116,15 +119,15 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/honglin/Desktop/saved/exp_reduce_no_features/cstdataset/combined_config/model/model_best.pth')
-folder = "/home/honglin/Desktop/datasets/preprocessed_no_features_reduce/test/"
+    '/home/honglin/Desktop/saved/exp_84_reduce/cstdataset/combined_config_features_combined/model/model_best.pth')
+folder = "/home/honglin/Desktop/datasets/preprocessed_reduce_best_model_new/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=4,
+        in_channels=8,
         num_classes=8,
         patch_embed_depth=1,
         patch_embed_channels=48,
@@ -148,14 +151,13 @@ model = build_model(dict(
         unpool_backend="map",  # map / interp
     ),
     criteria=[
-        dict(type="FocalLoss", gamma=2.0, alpha=0.5,
-               loss_weight=1.0, ignore_index=-1)],
+        #dict(type="FocalLoss", gamma=2.0, alpha=0.5,
+        #      loss_weight=1.0, ignore_index=-1)],
         #dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1)],
-        #dict(type="CrossEntropyLoss", 
-        #weight=[18.27640341666697, 241.89166185804962, 69.79318908644407, 1.196935623575214, 807.5740889388345, 15.590822873082287, 192.57803512465904, 66.209016514812, 14382.784846318798, 181.14110296897786],
-        #loss_weight=1.0, ignore_index=-1)]
+        #dict(type="DiceLoss",smooth=1,exponent=2,loss_weight=1.0,ignore_index=-1)]
+        dict(type="CrossEntropyLoss", 
+        loss_weight=1.0, ignore_index=-1)]
 ))
-
 
 # for some reason this broke when it was working before
 # new_state_dict = OrderedDict()
@@ -187,7 +189,12 @@ for file in os.listdir(folder):
     data_dict["coord"] = torch.from_numpy(single_sample["coord"]).clone().to(
         torch.float).contiguous().detach().to(dev)
     data_dict["feat"] = torch.from_numpy(np.vstack((single_sample["coord"][:, 0], single_sample["coord"][:, 1], single_sample["coord"]
-                                        [:, 2], single_sample["intensity"][:, 0])).T).clone().to(torch.float).contiguous().detach().to(dev)
+                                        [:, 2], single_sample["intensity"][:, 0], 
+                                        single_sample["roughness"][:, 0],
+                                        single_sample["density"][:, 0],
+                                        single_sample["z_gradient"][:, 0],
+                                        single_sample["intensity_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
+                                        
     data_dict["offset"] = torch.tensor(
         [single_sample["coord"].shape[0]],  device=dev)
 

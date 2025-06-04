@@ -12,7 +12,7 @@ model = dict(
     backbone=dict(
         type="PT-v2m2",
         in_channels=8,
-        num_classes=11,
+        num_classes=13,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -35,8 +35,11 @@ model = dict(
         unpool_backend="map",  # map / interp
     ),
     criteria=[
-        dict(type="FocalLoss", gamma=2.0, alpha=0.5,
-              loss_weight=1.0, ignore_index=-1)],
+        dict(type="CompositeLoss", ce_weight=1.0, focal_weight=1.0, jaccard_weight=1.0, ce_params={'ignore_index': -1}, focal_params={'gamma': 2.0,'alpha':0.5,'ignore_index':-1},
+        jaccard_params={'smooth': 1,'ignore_index': -1})],
+        #dict(type="FocalLoss", gamma=2.0, alpha=0.5,
+        #     loss_weight=1.0, ignore_index=-1)],
+        #dict(type="DiceLoss",smooth=1,exponent=2,loss_weight=1.0,ignore_index=-1)]
         #dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1)],
         #dict(type="CrossEntropyLoss", 
         #weight=([29.81665323129815, 119.19071232030134, 33.78878256734547, 1.573890154967652, 321.2882754244011, 3.767921924299392, 273.7889542351112, 101.88056547768778, 125.56494241292182, 349.55853795365294, 3284.801297648013],
@@ -47,8 +50,8 @@ model = dict(
 # scheduler settings
 epoch = 200
 eval_epoch = 200
-optimizer = dict(type="AdamW", lr=0.001, weight_decay=0.05) # lr-0.007
-scheduler = dict(type="MultiStepLR", milestones=[0.6, 0.8], gamma=0.1)
+optimizer = dict(type="AdamW", lr=0.0005, weight_decay=0.05) # lr-0.007
+scheduler = dict(type="MultiStepLR", milestones=[0.5, 0.75], gamma=0.3)
 
 # dataset settings
 dataset_type = "CSTDataset"
@@ -62,9 +65,10 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=11,
+    num_classes=13,
     ignore_index=-1,
-    names= ['pavement', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter'],
+    # names= ['lane', 'shoulder', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter'],
+    names = ['building', 'car', 'clutter', 'lane', 'low-vegetation', 'median', 'pole', 'sidewalk', 'traffic-sign', 'traffic-signal', 'tree', 'pavement', 'cable'],
     train=dict(
         type=dataset_type,
         split="train",

@@ -31,21 +31,25 @@ colors = dict()
 #     8: [0,255,255]  # cyan, vegetatoin
 # }
 colors = {
-    0: [255, 255, 255],  # white, pavement
-    1: [0, 0, 255],      # blue, marking
-    2: [0, 128, 0],      # green, vegetation
-    3: [255, 0, 0],      # red, traffic-sign
-    4: [128, 0, 128],    # magenta, highway-guardrails
-    5: [255, 255, 0],    # yellow, concrete-barriers
-    6: [0, 0, 0],        # black, light-pole
-    7: [192, 192, 192]  # silver, clutter
-
+    0: [255, 255, 255],  # white, lane
+    1: [0, 0, 255],      # blue, shoulder
+    2: [128, 128, 0],    # olive, chevrons
+    3: [255, 0, 255],    # purple, broken-line
+    4: [0, 255, 255],    # cyan, solid-line
+    5: [255, 165, 0],    # orange, arrows
+    6: [0, 128, 0],      # green, vegetation
+    7: [255, 0, 0],      # red, traffic-sign
+    8: [128, 0, 128],    # magenta, highway-guardrails
+    9: [255, 255, 0],    # yellow, concrete-barriers
+    10: [0, 0, 0],       # black, light-pole
+    11: [192, 192, 192]  # silver, clutter
 }
 
-num_classes = 8
+
+num_classes = 12
 # class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
 # class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
-class_names = ['pavement', 'marking', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
+class_names = ['lane', 'shoulder', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
     data = [[class_names[i], *matrix[i]] for i in range(len(matrix))]
@@ -56,68 +60,14 @@ def print_matrix(matrix, filename):
     
 print(colors)
 
-
-def intensity_normalize(intensity_arr):
-    min = np.min(intensity_arr)
-    intensity_arr = intensity_arr - min
-    m = np.max(np.abs(intensity_arr))
-    intensity_arr = intensity_arr / m
-    return np.round(intensity_arr, 6)
-
-
-def pc_normalize(pc):
-    pc = pc.T
-    min = np.min(pc, axis=0)
-    for p in pc:
-        if p[0] < min[0]:
-            print("min x")
-    pc = pc - min
-    for p in pc:
-        if p[0] < 0:
-            print("really x")
-    m = np.max(np.sqrt(np.sum(pc**2, axis=1)))
-    pc = pc / m
-    return np.round(pc, 6)
-
-
-def farthest_point_downsample(points, numpoints):
-    point_cloud = o3d.geometry.PointCloud()
-    point_cloud.points = o3d.utility.Vector3dVector(points[:, :3])
-    point_cloud.colors = o3d.utility.Vector3dVector(
-        np.hstack((points[:, 3:], points[:, 3:], points[:, 3:])))
-    new_pointcloud = point_cloud.farthest_point_down_sample(numpoints)
-    new_points = np.hstack((np.asarray(new_pointcloud.points), np.asarray(
-        new_pointcloud.colors)[:, 0].reshape(-1, 1)))
-    return new_points
-
-
-def voxel_downsample(points, voxel_size):
-    point_cloud = o3d.geometry.PointCloud()
-    point_cloud.points = o3d.utility.Vector3dVector(points[:, :3])
-    intensity = points[:, 3]
-    new_pointcloud, original_indices, _ = (o3d.geometry.PointCloud.voxel_down_sample_and_trace(
-        point_cloud, voxel_size, point_cloud.get_min_bound(), point_cloud.get_max_bound(), False))
-
-    new_intensity = []
-
-    for vec in original_indices:
-        idx = [x for x in vec if x != -1]
-        avg = np.mean(intensity[idx])
-        new_intensity.append(avg)
-
-    new_points = np.hstack(
-        (new_pointcloud.points, np.array(new_intensity).reshape(-1, 1)))
-    return new_points
-
-
 predictions_folder = os.path.join(
     os.path.expanduser('~'), 'Desktop', 'predictions_single')
 if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/honglin/Desktop/saved/exp_reduce_no_features/cstdataset/combined_config/model/model_best.pth')
-folder = "/home/honglin/Desktop/datasets/preprocessed_no_features_reduce/test/"
+    '/home/honglin/Desktop/saved/exp_full_Focal_no_features/cstdataset/combined_config_full/model/model_best.pth')
+folder = "/home/honglin/Desktop/datasets/preprocessed_full_no_features_new/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
@@ -125,7 +75,7 @@ model = build_model(dict(
     backbone=dict(
         type="PT-v2m2",
         in_channels=4,
-        num_classes=8,
+        num_classes=12,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -147,12 +97,11 @@ model = build_model(dict(
         enable_checkpoint=False,
         unpool_backend="map",  # map / interp
     ),
-    criteria=[
-        dict(type="FocalLoss", gamma=2.0, alpha=0.5,
-               loss_weight=1.0, ignore_index=-1)],
+    criteria=[dict(type="FocalLoss", gamma=2.0, alpha=0.5,
+                   loss_weight=1.0, ignore_index=-1)],
+        #dict(type="DiceLoss",smooth=1,exponent=2,loss_weight=1.0,ignore_index=-1)]
         #dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1)],
         #dict(type="CrossEntropyLoss", 
-        #weight=[18.27640341666697, 241.89166185804962, 69.79318908644407, 1.196935623575214, 807.5740889388345, 15.590822873082287, 192.57803512465904, 66.209016514812, 14382.784846318798, 181.14110296897786],
         #loss_weight=1.0, ignore_index=-1)]
 ))
 

@@ -31,22 +31,23 @@ colors = dict()
 #     8: [0,255,255]  # cyan, vegetatoin
 # }
 colors = {
-    0: [255,255,0], # yellow, solid-edge-line
-    1: [0,255,0], # green, dashed-lane-line
-    2: [0,0,255], # blue, gore-area
-    3: [255,0,0], # red, vegetation
-    4: [255,255,255], # white, shoulder
-    5: [0,0,0],     # black, clutter
-    6: [0,0,128],   # light blue, traffic-sign
-    7: [255,0,255], # purple, light-pole
-    8: [0,255,255],  # cyan, concrete-barriers
-    9: [128,0,128],  # dark purple, lane
+    0: [255,255,0], # yellow, concrete-barriers
+    1: [0,0,255], # blue, traffic-sign
+    2: [255,0,0], # red, clutter
+    3: [255,255,255], # white, pavement
+    4: [0,0,0], # black, light-pole
+    5: [0,0,128], # light blue, vegetation
+    6: [255,0,255], # purple, broken-line
+    7: [0,255,255],  # cyan, solid-line
+    8: [128,128,0], # olive, gore-area
+    9: [0,255,0], # green, highway-guardrails
+
 }
 
 num_classes = 10
 # class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
 # class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
-class_names = ['solid-edge-line', 'dashed-lane-line', 'gore-area', 'vegetation', 'shoulder', 'clutter', 'traffic-sign', 'light-pole', 'concrete-barriers', 'lane']
+class_names = ['concrete-barriers', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line', 'solid-line', 'gore-area', 'highway-guardrails']
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
     data = [[class_names[i], *matrix[i]] for i in range(len(matrix))]
@@ -117,15 +118,15 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/helmasry/Desktop/saved/exp_unified_different_ig/cstdataset/combined_config_features_different/model/model_best.pth')
-folder = "/home/helmasry/Desktop/datasets/preprocessed_unified_different_ig/test/"
+    '/home/honglin/Desktop/saved/exp_Trail_Wade1/cstdataset/combined_config_features-/model/model_best.pth')
+folder = "/home/honglin/Desktop/datasets/preprocessed_test_wade1/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=8,
+        in_channels=7,
         num_classes=10,
         patch_embed_depth=1,
         patch_embed_channels=48,
@@ -148,10 +149,14 @@ model = build_model(dict(
         enable_checkpoint=False,
         unpool_backend="map",  # map / interp
     ),
-    criteria=[dict(type="FocalLoss", gamma=2.0, alpha=0.5,
-                   loss_weight=1.0, ignore_index=-1)],
+    criteria=[
+        # dict(type="FocalLoss", gamma=2.0, alpha=0.5,
+        #      loss_weight=1.0, ignore_index=-1),
+        # dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1),
+        dict(type="CrossEntropyLoss", 
+        weight=[51.42146564959911, 78.5283039934497, 18.47534696379318, 1.6528797238799071, 282.6492967180174, 3.8920417024824485, 260.1056459566075, 109.34789593698176, 38.98773074151407, 104.42329011184796],
+        loss_weight=1.0, ignore_index=-1)]
 ))
-
 
 # for some reason this broke when it was working before
 # new_state_dict = OrderedDict()
@@ -186,8 +191,7 @@ for file in os.listdir(folder):
                                         [:, 2], single_sample["intensity"][:, 0], 
                                         single_sample["roughness"][:, 0],
                                         single_sample["density"][:, 0],
-                                        single_sample["z_gradient"][:, 0],
-                                        single_sample["intensity_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
+                                        single_sample["z_gradient"][:, 0],)).T).clone().to(torch.float).contiguous().detach().to(dev)
                                         
     data_dict["offset"] = torch.tensor(
         [single_sample["coord"].shape[0]],  device=dev)

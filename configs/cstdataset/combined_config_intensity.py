@@ -11,8 +11,8 @@ model = dict(
     type="DefaultSegmentor",
     backbone=dict(
         type="PT-v2m2",
-        in_channels=8,
-        num_classes=11,
+        in_channels=5,
+        num_classes=12,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -37,6 +37,7 @@ model = dict(
     criteria=[
         dict(type="FocalLoss", gamma=2.0, alpha=0.5,
               loss_weight=1.0, ignore_index=-1)],
+        #dict(type="DiceLoss",smooth=1,exponent=2,loss_weight=1.0,ignore_index=-1)]
         #dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1)],
         #dict(type="CrossEntropyLoss", 
         #weight=([29.81665323129815, 119.19071232030134, 33.78878256734547, 1.573890154967652, 321.2882754244011, 3.767921924299392, 273.7889542351112, 101.88056547768778, 125.56494241292182, 349.55853795365294, 3284.801297648013],
@@ -62,9 +63,9 @@ change the features and keys in the collect transformation
 '''
 ##########
 data = dict(
-    num_classes=11,
+    num_classes=12,
     ignore_index=-1,
-    names= ['pavement', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter'],
+    names= ['lane', 'shoulder', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter'],
     train=dict(
         type=dataset_type,
         split="train",
@@ -102,7 +103,7 @@ data = dict(
             dict(
                 type="Collect",
                 keys=("coord", "segment"),
-                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient", "intensity_gradient"],
+                feat_keys=["coord", "intensity", "intensity_gradient"],
             ),
         ],
         test_mode=False,
@@ -133,7 +134,7 @@ data = dict(
                 type="Collect",
                 keys=("coord", "segment"),
                 offset_keys_dict=dict(offset="coord"),
-                feat_keys=["coord", "intensity", "roughness", "density", "z_gradient", "intensity_gradient"],
+                feat_keys=["coord", "intensity", "intensity_gradient"],
             ),
         ],
         test_mode=False,
@@ -159,7 +160,7 @@ data = dict(
                 dict(
                     type="Collect",
                     keys=("coord", "index"),
-                    feat_keys=("coord", "intensity",  "roughness", "density", "z_gradient", "intensity_gradient"),
+                    feat_keys=("coord", "intensity", "intensity_gradient"),
                 ),
             ],
             aug_transform=[

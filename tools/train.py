@@ -12,9 +12,14 @@ from pointcept.engines.defaults import (
 )
 from pointcept.engines.train import TRAINERS
 from pointcept.engines.launch import launch
+from pointcept.utils.env import set_seed
 import json
 
 def main_worker(cfg):
+    seed = getattr(cfg, "seed", 0)
+    set_seed(seed)
+    print(f"[INFO] Random Seed Set To: {seed}")
+
     cfg = default_setup(cfg)
     trainer = TRAINERS.build(dict(type=cfg.train.type, cfg=cfg))
     trainer.train()

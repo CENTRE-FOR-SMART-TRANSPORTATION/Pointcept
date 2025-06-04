@@ -72,6 +72,13 @@ class ClsEvaluator(HookBase):
         m_iou = np.mean(iou_class)
         m_acc = np.mean(acc_class)
         all_acc = sum(intersection) / (sum(target) + 1e-10)
+        
+        area_pred = torch.histc(pred, bins=k, min=0, max=k - 1)
+        tp = sum(intersection)
+        fp = sum(area_pred) - sum(intersection)
+        fn = sum(target) - sum(intersection)
+        print("f1", tp, fp, fn)
+        
         self.trainer.logger.info(
             "Val result: mIoU/mAcc/allAcc {:.4f}/{:.4f}/{:.4f}.".format(
                 m_iou, m_acc, all_acc
@@ -146,6 +153,9 @@ class SemSegEvaluator(HookBase):
                 union.cpu().numpy(),
                 target.cpu().numpy(),
             )
+            #area_pred = torch.histc(pred, bins=self.trainer.cfg.data.num_classes, min=0, max=self.trainer.cfg.data.num_classes - 1).cpu()
+            
+            #self.trainer.storage.put_scalar("val_area_pred", area_pred)
             # Here there is no need to sync since sync happened in dist.all_reduce
             self.trainer.storage.put_scalar("val_intersection", intersection)
             self.trainer.storage.put_scalar("val_union", union)
@@ -171,6 +181,20 @@ class SemSegEvaluator(HookBase):
         m_iou = np.mean(iou_class)
         m_acc = np.mean(acc_class)
         all_acc = sum(intersection) / (sum(target) + 1e-10)
+        '''
+        area_pred = self.trainer.storage.history("val_area_pred").total
+        tp = sum(intersection)
+        fp = sum(area_pred - intersection)
+        fn = sum(target) - sum(intersection)
+        print("f1", tp, fp, fn)
+        print(area_pred)
+        print(intersection)
+        print(target)
+        print("area", sum(area_pred))
+        print("intersection", sum(intersection))
+        print("target", sum(target))
+        print("pred", pred.shape)
+        '''
         self.trainer.logger.info(
             "Val result: mIoU/mAcc/allAcc {:.4f}/{:.4f}/{:.4f}.".format(
                 m_iou, m_acc, all_acc

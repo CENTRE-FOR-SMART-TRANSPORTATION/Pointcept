@@ -23,13 +23,12 @@ def parse_room(
     room, dataset_root, output_root
 ):
     print("Parsing: {}".format(room))
-    classes = ['concrete-barriers', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line',
-                'solid-line', 'gore-area', 'highway-guardrails']
-
+    classes = ['building', 'car', 'clutter', 'lane', 'low-vegetation', 'median', 'pole', 'sidewalk', 'traffic-sign', 'traffic-signal', 'tree', 'pavement', 'cable']
+    # classes = ['pavement', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
 
     class2label = {cls: i for i, cls in enumerate(classes)}
 
-    # class2label['clutter'] = -1
+    # class2label['arrows','chevrons'] = -1
     source_dir = os.path.join(dataset_root, room)
     save_path = os.path.join(output_root, room) + ".pth"
     os.makedirs(os.path.dirname(save_path), exist_ok=True)

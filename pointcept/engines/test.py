@@ -4,6 +4,7 @@ Tester
 Author: Xiaoyang Wu (xiaoyang.wu.cs@gmail.com)
 Please cite our work if the code is helpful to you.
 """
+from sklearn.metrics import f1_score
 
 import os
 import time
@@ -156,6 +157,8 @@ class SemSegTester(TesterBase):
                 json.dump(submission, f, indent=4)
         comm.synchronize()
         record = {}
+        all_ground_truths = [] #
+        all_predictions = []   #
         # fragment inference
         for idx, data_dict in enumerate(self.test_loader):
             end = time.time()
@@ -221,7 +224,10 @@ class SemSegTester(TesterBase):
             record[data_name] = dict(
                 intersection=intersection, union=union, target=target
             )
-
+            
+            all_ground_truths.extend(segment) #
+            all_predictions.extend(pred)      #
+            
             mask = union != 0
             iou_class = intersection / (union + 1e-10)
             iou = np.mean(iou_class[mask])
@@ -534,8 +540,13 @@ class PartSegTester(TesterBase):
                     iou_count=int(iou_count[i]),
                 )
             )
+                    # calculate F1 score
+        f1 = f1_score(all_ground_truths, all_predictions, average='weighted')
+        logger.info("F1 Score: {:.4f}".format(f1))
+        
         logger.info("<<<<<<<<<<<<<<<<< End Evaluation <<<<<<<<<<<<<<<<<")
 
+            
     @staticmethod
     def collate_fn(batch):
         return collate_fn(batch)

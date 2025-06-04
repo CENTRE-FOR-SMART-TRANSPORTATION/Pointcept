@@ -1,5 +1,3 @@
-
-
 """
 Preprocessing Script for S3DIS
 Parsing normal vectors has a large consumption of memory. Please reduce max_workers if memory is limited.
@@ -25,10 +23,10 @@ def parse_room(
     room, dataset_root, output_root
 ):
     print("Parsing: {}".format(room))
-    classes = ['solid-edge-line', 'dashed-lane-line', 'gore-area', 'vegetation', 'shoulder', 'clutter', 'traffic-sign', 'light-pole', 'concrete-barriers', 'lane']
-
+    classes = ['lane', 'shoulder', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
 
     class2label = {cls: i for i, cls in enumerate(classes)}
+
     # class2label['clutter'] = -1
     source_dir = os.path.join(dataset_root, room)
     save_path = os.path.join(output_root, room) + ".pth"
@@ -39,6 +37,10 @@ def parse_room(
 
     room_coords = []
     room_intensity = []
+    room_roughness = []
+    room_density = []
+    room_z_gradient = []
+    room_intensity_gradient = []
     room_semantic_gt = []
     room_instance_gt = []
 
@@ -49,12 +51,28 @@ def parse_room(
             coords = obj[:, :3]
             intensity = obj[:, 3]
             intensity = intensity.reshape([-1, 1])
+            roughness = obj[:, 4]
+            roughness = roughness.reshape([-1, 1])
+            density = obj[:, 5]
+            density = density.reshape([-1, 1])
+            z_gradient = obj[:, 6]
+            z_gradient = z_gradient.reshape([-1, 1])
+            intensity_gradient = obj[:, 7]
+            intensity_gradient = intensity_gradient.reshape([-1, 1])     
         except IndexError:
             try:
                 obj = obj.reshape([-1, 4])
                 coords = obj[:, :3]
                 intensity = obj[:, 3]
                 intensity = intensity.reshape([-1, 1])
+                roughness = obj[:, 4]
+                roughness = roughness.reshape([-1, 1])
+                density = obj[:, 5]
+                density = density.reshape([-1, 1])
+                z_gradient = obj[:, 6]
+                z_gradient = z_gradient.reshape([-1, 1])
+                intensity_gradient = obj[:, 7]
+                intensity_gradient = intensity_gradient.reshape([-1, 1])   
             except Exception:
                 print("#################### error", object_path)
                 continue
@@ -67,18 +85,32 @@ def parse_room(
         print(f"{coords.shape} points for {class_name}/{object_name}")
         room_coords.append(coords)
         room_intensity.append(intensity)
+        room_roughness.append(roughness)
+        room_density.append(density)
+        room_z_gradient.append(z_gradient)
+        room_intensity_gradient.append(intensity_gradient)
         room_semantic_gt.append(semantic_gt)
         room_instance_gt.append(instance_gt)
 
-
-    room_coords = np.ascontiguousarray(np.vstack(room_coords))
-    room_intensity = np.ascontiguousarray(np.vstack(room_intensity))
-    room_semantic_gt = np.ascontiguousarray(np.vstack(room_semantic_gt))
-    room_instance_gt = np.ascontiguousarray(np.vstack(room_instance_gt))
+    try:
+        room_coords = np.ascontiguousarray(np.vstack(room_coords))
+        room_intensity = np.ascontiguousarray(np.vstack(room_intensity))
+        room_roughness = np.ascontiguousarray(np.vstack(room_roughness))
+        room_density = np.ascontiguousarray(np.vstack(room_density))
+        room_z_gradient = np.ascontiguousarray(np.vstack(room_z_gradient))
+        room_intensity_gradient = np.ascontiguousarray(np.vstack(room_intensity_gradient))
+        room_semantic_gt = np.ascontiguousarray(np.vstack(room_semantic_gt))
+        room_instance_gt = np.ascontiguousarray(np.vstack(room_instance_gt))
+    except ValueError:
+        print("#################### error", save_path)
 
     save_dict = dict(
         coord=room_coords,
         intensity=room_intensity,
+        roughness=room_roughness,
+        density=room_density,
+        z_gradient=room_z_gradient,
+        intensity_gradient=room_intensity_gradient,
         semantic_gt=room_semantic_gt,
         instance_gt=room_instance_gt,
     )

@@ -20,37 +20,38 @@ print(torch.backends.cudnn.is_available())
 torch.cuda.empty_cache()
 colors = dict()
 # colors = {
-#     0: [255,255,0], # yellow, solid-line
-#     1: [0,255,0], # green, traffic-sign
-#     2: [0,0,255], # blue, wooden-utility-pole
-#     3: [255,0,0], # red, clutter
-#     4: [255,255,255], # white, road
-#     5: [0,0,0],     # black, wires
-#     6: [0,0,128],   # light blue, delineator post
-#     7: [255,0,255], # purple, broken-line
-#     8: [0,255,255]  # cyan, vegetatoin
+#    0: [0, 0, 255],      # blue, lane
+#    1: [255, 255, 0],    # yellow, shoulder
+#    2: [128, 128, 0],    # olive, chevrons
+#    3: [255, 0, 255],    # purple, broken-line
+#    4: [0, 255, 255],    # cyan, solid-line
+#    5: [255, 165, 0],    # orange, arrows
+#    6: [0, 128, 0],      # green, vegetation
+#    7: [255, 0, 0],      # red, traffic-sign
+#    8: [128, 0, 128],    # magenta, highway-guardrails
+#    9: [255, 255, 255],  # white, concrete-barriers
+#    10: [0, 0, 0],       # black, light-pole
+#    11: [192, 192, 192]  # silver, clutter
 # }
 colors = {
-    0: [255,255,0], # yellow, concrete-barriers
-    1: [0,255,0], # green, wires
-    2: [0,0,255], # blue, traffic-sign
-    3: [255,0,0], # red, clutter
-    4: [255,255,255], # white, pavement
-    5: [0,0,0],     # black, light-pole
-    6: [0,0,128],   # light blue, vegetation
-    7: [255,0,255], # purple, broken-line
-    8: [0,255,255],  # cyan, solid-line
-    9: [128,0,128],  # dark purple, traffic-cones
-    10: [128,128,0], # olive, gore-area
-    11: [255,165,0], # orange, highway-guardrails
-    12: [128,128,128] # gray, delineator-post
+    0: [255, 255, 255],  # white, pavement
+    1: [128, 128, 0],    # olive, chevrons
+    2: [255, 0, 255],    # purple, broken-line
+    3: [0, 255, 255],    # cyan, solid-line
+    4: [255, 165, 0],    # orange, arrows
+    5: [0, 128, 0],      # green, vegetation
+    6: [255, 0, 0],      # red, traffic-sign
+    7: [128, 0, 128],    # magenta, highway-guardrails
+    8: [255, 255, 0],    # yellow, concrete-barriers
+    9: [0, 0, 0],        # black, light-pole
+    10: [192, 192, 192]  # silver, clutter
+
 }
 
-num_classes = 13
+num_classes = 11
 # class_names = ['traffic-sign', 'delineator-post', 'wires', 'wooden-utility-pole', 'road', 'vegetation', 'clutter']
 # class_names = ['solid-line', 'traffic-sign', 'wooden-utility-pole', 'clutter', 'road', 'wires', 'delineator-post', 'broken-line', 'vegetation']
-class_names = ['concrete-barriers', 'wires', 'traffic-sign', 'clutter', 'pavement', 'light-pole', 'vegetation', 'broken-line', 'solid-line', 
-           'traffic-cones', 'gore-area', 'highway-guardrails', 'delineator-post']
+class_names = ['pavement', 'chevrons', 'broken-line', 'solid-line', 'arrows', 'vegetation', 'traffic-sign', 'highway-guardrails', 'concrete-barriers', 'light-pole', 'clutter']
 def print_matrix(matrix, filename):
     headers = ["", *class_names]
     data = [[class_names[i], *matrix[i]] for i in range(len(matrix))]
@@ -121,8 +122,8 @@ if not os.path.exists(predictions_folder):
     os.makedirs(predictions_folder)
 
 model_saved = torch.load(
-    '/home/helmasry/Desktop/saved/exp_combined_ig/cstdataset/combined_config_features/model/model_best.pth')
-folder = "/home/helmasry/Desktop/datasets/preprocessed_combined_ig/test/"
+    '/home/honglin/Desktop/saved/exp_Trail_lane/cstdataset/combined_config_features/model/model_best.pth')
+folder = "/home/honglin/Desktop/datasets/preprocessed_1/test/"
 
 state_dict = model_saved["state_dict"]
 model = build_model(dict(
@@ -130,7 +131,7 @@ model = build_model(dict(
     backbone=dict(
         type="PT-v2m2",
         in_channels=8,
-        num_classes=13,
+        num_classes=11,
         patch_embed_depth=1,
         patch_embed_channels=48,
         patch_embed_groups=6,
@@ -152,10 +153,14 @@ model = build_model(dict(
         enable_checkpoint=False,
         unpool_backend="map",  # map / interp
     ),
-    criteria=[dict(type="FocalLoss", gamma=2.0, alpha=0.5,
-                   loss_weight=1.0, ignore_index=-1)],
+    criteria=[
+        dict(type="FocalLoss", gamma=2.0, alpha=0.5,
+              loss_weight=1.0, ignore_index=-1)],
+        #dict(type="LovaszLoss", mode="multiclass", loss_weight=1.0, ignore_index=-1)],
+        #dict(type="CrossEntropyLoss", 
+        #weight=[18.27640341666697, 241.89166185804962, 69.79318908644407, 1.196935623575214, 807.5740889388345, 15.590822873082287, 192.57803512465904, 66.209016514812, 14382.784846318798, 181.14110296897786],
+        #loss_weight=1.0, ignore_index=-1)]
 ))
-
 
 # for some reason this broke when it was working before
 # new_state_dict = OrderedDict()
@@ -165,7 +170,7 @@ model = build_model(dict(
 #     new_state_dict[new_k] = state_dict[k]
 
 
-model.load_state_dict(state_dict, strict=True)
+model.load_state_dict(state_dict)
 
 model.eval()
 

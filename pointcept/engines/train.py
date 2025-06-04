@@ -137,10 +137,8 @@ class Trainer(TrainerBase):
         self.model = self.build_model()
         self.logger.info("=> Building writer ...")
         self.writer = self.build_writer()
-        self.logger.info("=> Building train dataset & dataloader ...")
-        self.train_loader = self.build_train_loader()
-        self.logger.info("=> Building val dataset & dataloader ...")
-        self.val_loader = self.build_val_loader()
+        self.logger.info("=> Building train and val dataset & dataloader ...")
+        self.train_loader, self.val_loader = self.build_train_val_loaders()
         self.logger.info("=> Building optimize, scheduler, scaler(amp) ...")
         self.optimizer = self.build_optimizer()
         self.scheduler = self.build_scheduler()
@@ -227,71 +225,41 @@ class Trainer(TrainerBase):
         self.logger.info(f"Tensorboard writer logging dir: {self.cfg.save_path}")
         return writer
 
-    def build_train_loader(self):
-        # print("Building the train dataset:", self.cfg.data.train)
-        train_data = build_dataset(self.cfg.data.train)
-        
-        if comm.get_world_size() > 1:
-            train_sampler = torch.utils.data.distributed.DistributedSampler(train_data)
-        else:
-            train_sampler = None
+    def build_train_val_loaders(self):
+        full_dataset = build_dataset(self.cfg.data.train)  # single dataset path
 
-        # init_fn = (
-        #     partial(
-        #         worker_init_fn,
-        #         num_workers=self.cfg.num_worker_per_gpu,
-        #         rank=comm.get_rank(),
-        #         seed=self.cfg.seed,
-        #     )
-        #     if self.cfg.seed is not None
-        #     else None
-        # )
+        # Ensure reproducible split
+        val_ratio = getattr(self.cfg, "val_split_ratio", 0.2)
+        total_len = len(full_dataset)
+        val_len = int(total_len * val_ratio)
+        train_len = total_len - val_len
 
-        # train_loader = torch.utils.data.DataLoader(
-        #     train_data,
-        #     batch_size=self.cfg.batch_size_per_gpu,
-        #     shuffle=(train_sampler is None),
-        #     num_workers=self.cfg.num_worker_per_gpu,
-        #     sampler=train_sampler,
-        #     collate_fn=partial(point_collate_fn, mix_prob=self.cfg.mix_prob),
-        #     pin_memory=True,
-        #     worker_init_fn=init_fn,
-        #     drop_last=True,
-        #     persistent_workers=True,
-        # )
+        train_dataset, val_dataset = torch.utils.data.random_split(full_dataset, [train_len, val_len])
 
-        # removing all multiprocessing and workers
+        # No multiprocessing
         train_loader = torch.utils.data.DataLoader(
-            train_data,
+            train_dataset,
             batch_size=self.cfg.batch_size_per_gpu,
-            shuffle=(train_sampler is None),
+            shuffle=True,
             num_workers=0,
-            sampler=train_sampler,
-            collate_fn=partial(point_collate_fn, mix_prob=self.cfg.mix_prob),
             pin_memory=False,
             drop_last=True,
+            collate_fn=partial(point_collate_fn, mix_prob=self.cfg.mix_prob),
             persistent_workers=False,
         )
-        return train_loader
 
-    def build_val_loader(self):
-        val_loader = None
-        if self.cfg.evaluate:
-            val_data = build_dataset(self.cfg.data.val)
-            if comm.get_world_size() > 1:
-                val_sampler = torch.utils.data.distributed.DistributedSampler(val_data)
-            else:
-                val_sampler = None
-            val_loader = torch.utils.data.DataLoader(
-                val_data,
-                batch_size=self.cfg.batch_size_val_per_gpu,
-                shuffle=False,
-                num_workers=0,
-                pin_memory=False,
-                sampler=val_sampler,
-                collate_fn=collate_fn,
-            )
-        return val_loader
+        val_loader = torch.utils.data.DataLoader(
+            val_dataset,
+            batch_size=self.cfg.batch_size_val_per_gpu,
+            shuffle=False,
+            num_workers=0,
+            pin_memory=False,
+            drop_last=False,
+            collate_fn=collate_fn,
+        )
+
+        return train_loader, val_loader
+
 
     def build_optimizer(self):
         return build_optimizer(self.cfg.optimizer, self.model, self.cfg.param_dicts)
